@@ -27,6 +27,12 @@ migrate_working_dir/
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
+.dart-tool/
+.dartServer/
+.android/
+.config/
+.flutter/
+.flutter-devtools/
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
@@ -43,10 +49,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
-
-/flutter/
-
-/flutter/
 
 /flutter/
 /ui-ux-pro-max-skill/
