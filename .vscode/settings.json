@@ -1,0 +1,21 @@
+{
+  "dart.flutterSdkPath": "${workspaceFolder}/flutter",
+  "dart.analysisExcludedFolders": [
+    "${workspaceFolder}/flutter"
+  ],
+  "files.exclude": {
+    "**/.dart_tool": true,
+    "**/build": true,
+    "flutter": true
+  },
+  "search.exclude": {
+    "**/.dart_tool": true,
+    "**/build": true,
+    "flutter": true
+  },
+  "files.watcherExclude": {
+    "**/.dart_tool/**": true,
+    "**/build/**": true,
+    "**/flutter/**": true
+  }
+}
