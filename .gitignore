@@ -32,6 +32,7 @@ migrate_working_dir/
 .android/
 .config/
 .flutter/
+.flutter
 .flutter-devtools/
 .flutter-plugins-dependencies
 .pub-cache/
