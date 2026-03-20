@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../core/theme/app_theme.dart';
 import '../models/alert_event.dart';
 import '../models/sensor_status.dart';
+import 'status_badge.dart';
 
 class AlertHistoryCard extends StatelessWidget {
   const AlertHistoryCard({
@@ -14,14 +15,14 @@ class AlertHistoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final visibleAlerts = alerts.take(4).toList(growable: false);
+    final visibleAlerts = alerts.take(6).toList(growable: false);
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.94),
-        borderRadius: BorderRadius.circular(28),
+        gradient: AppTheme.panelGradient,
+        borderRadius: BorderRadius.circular(30),
         border: Border.all(color: AppTheme.border),
         boxShadow: AppTheme.softShadow,
       ),
@@ -31,9 +32,19 @@ class AlertHistoryCard extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Text(
-                  'Alert history',
-                  style: Theme.of(context).textTheme.titleLarge,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Recent timeline',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Scan the most recent status changes and their causes in order.',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
                 ),
               ),
               Container(
@@ -46,36 +57,41 @@ class AlertHistoryCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  'Recent timeline',
+                  '${visibleAlerts.length} events',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: AppTheme.textPrimary,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w800,
                       ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 20),
           if (visibleAlerts.isEmpty)
             Text(
-              'No alerts captured yet.',
+              'No alert events captured yet.',
               style: Theme.of(context).textTheme.bodyMedium,
             )
           else
-            for (var index = 0; index < visibleAlerts.length; index++) ...[
-              _AlertRow(alert: visibleAlerts[index]),
-              if (index != visibleAlerts.length - 1) const SizedBox(height: 12),
-            ],
+            for (var index = 0; index < visibleAlerts.length; index++)
+              _TimelineRow(
+                alert: visibleAlerts[index],
+                isLast: index == visibleAlerts.length - 1,
+              ),
         ],
       ),
     );
   }
 }
 
-class _AlertRow extends StatelessWidget {
-  const _AlertRow({required this.alert});
+class _TimelineRow extends StatelessWidget {
+  const _TimelineRow({
+    required this.alert,
+    required this.isLast,
+  });
 
   final AlertEvent alert;
+  final bool isLast;
 
   @override
   Widget build(BuildContext context) {
@@ -86,70 +102,99 @@ class _AlertRow extends StatelessWidget {
     };
 
     final icon = switch (alert.status) {
-      SensorStatus.stable => Icons.check_circle_outline,
+      SensorStatus.stable => Icons.check_circle_outline_rounded,
       SensorStatus.unusual => Icons.health_and_safety_outlined,
       SensorStatus.anomaly => Icons.warning_amber_rounded,
     };
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: color.withValues(alpha: 0.14)),
-      ),
+    return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.92),
-              borderRadius: BorderRadius.circular(14),
+          SizedBox(
+            width: 28,
+            child: Column(
+              children: [
+                Container(
+                  width: 14,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: color.withValues(alpha: 0.18),
+                        blurRadius: 10,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                ),
+                if (!isLast)
+                  Expanded(
+                    child: Container(
+                      width: 2,
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      color: AppTheme.border,
+                    ),
+                  ),
+              ],
             ),
-            alignment: Alignment.center,
-            child: Icon(icon, color: color),
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        alert.title,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
+            child: Container(
+              margin: EdgeInsets.only(bottom: isLast ? 0 : 14),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.07),
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: color.withValues(alpha: 0.16)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 38,
+                        height: 38,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.92),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        alignment: Alignment.center,
+                        child: Icon(icon, color: color, size: 18),
                       ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          alert.title,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
                       ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.88),
-                        borderRadius: BorderRadius.circular(999),
+                      StatusBadge(
+                        label: _formatTimestamp(alert.timestamp),
+                        color: color,
+                        pulse: false,
                       ),
-                      child: Text(
-                        _formatTimestamp(alert.timestamp),
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  alert.details,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Cause',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppTheme.primary,
+                          fontWeight: FontWeight.w800,
+                        ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    alert.details,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
             ),
           ),
         ],

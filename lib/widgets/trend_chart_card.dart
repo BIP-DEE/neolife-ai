@@ -13,6 +13,7 @@ class TrendChartCard extends StatelessWidget {
     required this.unit,
     required this.color,
     required this.values,
+    this.highlighted = false,
   });
 
   final String title;
@@ -20,6 +21,7 @@ class TrendChartCard extends StatelessWidget {
   final String unit;
   final Color color;
   final List<double> values;
+  final bool highlighted;
 
   @override
   Widget build(BuildContext context) {
@@ -37,14 +39,17 @@ class TrendChartCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            color.withValues(alpha: 0.08),
+            color.withValues(alpha: highlighted ? 0.12 : 0.08),
             Colors.white,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: AppTheme.border),
+        border: Border.all(
+          color: highlighted ? color.withValues(alpha: 0.28) : AppTheme.border,
+          width: highlighted ? 1.2 : 1,
+        ),
         boxShadow: AppTheme.softShadow,
       ),
       child: Padding(
@@ -59,6 +64,27 @@ class TrendChartCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      if (highlighted) ...[
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: color.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: Text(
+                            'Current focus',
+                            style:
+                                Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: AppTheme.textPrimary,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                      ],
                       Text(
                         title,
                         style: Theme.of(context).textTheme.titleLarge,

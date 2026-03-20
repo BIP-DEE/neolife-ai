@@ -53,6 +53,7 @@ class _AppShellState extends State<AppShell> {
       HomeScreen(
         onOpenTrends: () => _goTo(1),
         onOpenAlerts: () => _goTo(2),
+        onOpenDevice: () => _goTo(3),
       ),
       const TrendsScreen(),
       AlertsScreen(onOpenDevice: () => _goTo(3)),

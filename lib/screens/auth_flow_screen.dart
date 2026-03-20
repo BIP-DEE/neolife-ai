@@ -14,18 +14,15 @@ class AuthFlowScreen extends StatefulWidget {
 }
 
 class _AuthFlowScreenState extends State<AuthFlowScreen> {
-  final _signInEmailController =
-      TextEditingController(text: 'hello@neolife.ai');
-  final _signInPasswordController = TextEditingController(text: 'neolife-demo');
-  final _registerCaregiverController = TextEditingController(text: 'Chanda');
-  final _registerInfantController = TextEditingController(text: 'Baby Neo');
-  final _registerEmailController =
-      TextEditingController(text: 'hello@neolife.ai');
-  final _registerPasswordController =
-      TextEditingController(text: 'neolife-demo');
+  final _signInEmailController = TextEditingController();
+  final _signInPasswordController = TextEditingController();
+  final _registerCaregiverController = TextEditingController();
+  final _registerInfantController = TextEditingController();
+  final _registerEmailController = TextEditingController();
+  final _registerPasswordController = TextEditingController();
 
-  bool _signInAcceptedTerms = true;
-  bool _acceptedTerms = true;
+  bool _signInAcceptedTerms = false;
+  bool _acceptedTerms = false;
 
   @override
   void dispose() {
@@ -76,13 +73,13 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> {
                           imagePath: 'assets/images/baby_crib.jpeg',
                           title: 'Welcome back',
                           subtitle:
-                              'Sign in to open your live monitoring demo.',
+                              'Sign in to open your infant wellness dashboard.',
                           form: _AuthFormCard(
                             mode: _AuthMode.signIn,
                             title: 'Sign in',
                             subtitle:
-                                'Use any valid demo credentials to continue.',
-                            primaryLabel: 'Enter dashboard',
+                                'Continue to your latest live status, alerts, and trends.',
+                            primaryLabel: 'Open dashboard',
                             secondaryLabel: 'Create account',
                             onSecondaryTap: session.showRegister,
                             onBack: session.showWelcome,
@@ -103,14 +100,14 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> {
                       AuthStage.register => _AuthStageScaffold(
                           key: const ValueKey('register'),
                           imagePath: 'assets/images/baby_chest.jpg',
-                          title: 'Create an account',
+                          title: 'Create your account',
                           subtitle:
-                              'Create a local caregiver profile for the demo.',
+                              'Set up your caregiver account and infant profile.',
                           form: _AuthFormCard(
                             mode: _AuthMode.register,
                             title: 'Create account',
                             subtitle:
-                                'Add caregiver and infant details to begin.',
+                                'Add your caregiver and infant details to begin.',
                             primaryLabel: 'Create account',
                             secondaryLabel: 'Already have an account?',
                             onSecondaryTap: session.showSignIn,
@@ -189,26 +186,26 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'This prototype stores data locally only. No personal or infant data is transmitted to a backend in this demo build.',
+                  'NeoLife AI is designed around trust, clear wellness context, and a reassuring family experience.',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: 18),
                 const _LegalPoint(
-                  title: 'Demo-only access',
+                  title: 'Private by design',
                   body:
-                      'Authentication is simulated for presentation and does not create a real cloud account.',
+                      'This product preview keeps caregiver and infant details on this device while connected account services are still being finalized.',
                 ),
                 const SizedBox(height: 12),
                 const _LegalPoint(
                   title: 'Wellness guidance',
                   body:
-                      'The mock alerts and charts are illustrative only and not a medical diagnosis.',
+                      'NeoLife AI supports infant wellness visibility and does not replace urgent medical evaluation or diagnosis.',
                 ),
                 const SizedBox(height: 12),
                 const _LegalPoint(
-                  title: 'Future sensor path',
+                  title: 'Care support',
                   body:
-                      'The architecture is ready to swap the mock stream with BLE integration in a later phase.',
+                      'The NeoLife team is available for onboarding help, product questions, and privacy guidance.',
                 ),
               ],
             ),
@@ -238,8 +235,9 @@ class _WelcomeStage extends StatelessWidget {
           final wide = constraints.maxWidth >= 820;
           final visual = const _HeroVisual(
             imagePath: 'assets/images/baby_crib.jpeg',
-            title: 'Quiet, trustworthy monitoring.',
-            subtitle: 'A softer demo experience for infant wellness.',
+            title: 'Calm visibility for infant wellness.',
+            subtitle:
+                'A reassuring home for live monitoring, trends, and thoughtful caregiver support.',
           );
           final story = _WelcomeCard(
             onSignIn: onSignIn,
@@ -297,7 +295,7 @@ class _WelcomeCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(999),
             ),
             child: Text(
-              'Local caregiver demo',
+              'NeoLife family care',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppTheme.primaryDeep,
                     fontWeight: FontWeight.w700,
@@ -306,14 +304,14 @@ class _WelcomeCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Infant wellness, clearly presented.',
+            'A calmer way to stay close to every shift.',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   height: 1.05,
                 ),
           ),
           const SizedBox(height: 10),
           Text(
-            'NeoLife AI keeps live signals calm, readable, and presentation-ready.',
+            'NeoLife AI brings live wellness signals, temperature trend context, and caregiver-ready guidance into one trusted experience.',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 18),
@@ -322,7 +320,7 @@ class _WelcomeCard extends StatelessWidget {
             style:
                 FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
             icon: const Icon(Icons.person_add_alt_1_rounded, size: 18),
-            label: const Text('Create caregiver account'),
+            label: const Text('Create account'),
           ),
           const SizedBox(height: 10),
           OutlinedButton.icon(
@@ -330,17 +328,35 @@ class _WelcomeCard extends StatelessWidget {
             style: OutlinedButton.styleFrom(
                 minimumSize: const Size.fromHeight(52)),
             icon: const Icon(Icons.login_rounded, size: 18),
-            label: const Text('Sign in to the demo'),
+            label: const Text('Sign in'),
           ),
           const SizedBox(height: 16),
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: const [
-              _WelcomeTag(label: 'No backend required'),
-              _WelcomeTag(label: 'Mock live feed'),
-              _WelcomeTag(label: 'BLE-ready architecture'),
+              _WelcomeTag(label: 'Live wellness overview'),
+              _WelcomeTag(label: 'Temperature trend monitoring'),
+              _WelcomeTag(label: 'Family-ready alerts'),
             ],
+          ),
+          const SizedBox(height: 20),
+          const _WelcomeDetail(
+            title: 'Built for calmer nights',
+            body:
+                'See the current status first, then move naturally into trends, alerts, or device fit only when you need more context.',
+          ),
+          const SizedBox(height: 12),
+          const _WelcomeDetail(
+            title: 'Private and reassuring',
+            body:
+                'NeoLife AI is designed around trust, clear communication, and a softer monitoring experience for families.',
+          ),
+          const SizedBox(height: 12),
+          const _WelcomeDetail(
+            title: 'Support when you need it',
+            body:
+                'Product guidance, setup help, and caregiver support are easy to reach throughout the experience.',
           ),
         ],
       ),
@@ -370,6 +386,37 @@ class _WelcomeTag extends StatelessWidget {
               color: AppTheme.textPrimary,
               fontWeight: FontWeight.w700,
             ),
+      ),
+    );
+  }
+}
+
+class _WelcomeDetail extends StatelessWidget {
+  const _WelcomeDetail({
+    required this.title,
+    required this.body,
+  });
+
+  final String title;
+  final String body;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.76),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 4),
+          Text(body, style: Theme.of(context).textTheme.bodyMedium),
+        ],
       ),
     );
   }
@@ -457,8 +504,8 @@ class _HeroVisual extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      AppTheme.primaryDeep.withValues(alpha: 0.08),
-                      AppTheme.primaryDeep.withValues(alpha: 0.76),
+                      AppTheme.primaryDeep.withValues(alpha: 0.03),
+                      AppTheme.primaryDeep.withValues(alpha: 0.28),
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -477,9 +524,11 @@ class _HeroVisual extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.90),
+                    color: Colors.white.withValues(alpha: 0.78),
                     borderRadius: BorderRadius.circular(22),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.30)),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.22),
+                    ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -498,8 +547,8 @@ class _HeroVisual extends StatelessWidget {
                         spacing: 8,
                         runSpacing: 8,
                         children: const [
-                          _HeroVisualStat(label: '1 sec updates'),
-                          _HeroVisualStat(label: 'Local demo'),
+                          _HeroVisualStat(label: 'Private by design'),
+                          _HeroVisualStat(label: 'Caregiver-ready'),
                         ],
                       ),
                     ],

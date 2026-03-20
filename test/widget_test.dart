@@ -18,9 +18,10 @@ void main() {
       ),
     );
 
-    expect(find.text('Infant wellness, clearly presented.'), findsOneWidget);
-    expect(find.text('Create caregiver account'), findsOneWidget);
-    expect(find.text('Sign in to the demo'), findsOneWidget);
+    expect(find.text('A calmer way to stay close to every shift.'),
+        findsOneWidget);
+    expect(find.text('Create account'), findsOneWidget);
+    expect(find.text('Sign in'), findsOneWidget);
   });
 
   testWidgets('renders dashboard after authentication', (tester) async {
@@ -44,9 +45,9 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 600));
 
-    expect(find.text('Live signals'), findsOneWidget);
-    expect(find.text('Placement mode'), findsOneWidget);
-    expect(find.text('Alert summary'), findsOneWidget);
+    expect(find.text('Key wellness signals'), findsOneWidget);
+    expect(find.text('Recommended action'), findsOneWidget);
+    expect(find.text('Recent changes'), findsOneWidget);
   });
 
   testWidgets('sign in flow opens dashboard', (tester) async {
@@ -63,18 +64,29 @@ void main() {
       ),
     );
 
-    await tester.tap(find.text('Sign in to the demo'));
+    await tester.tap(find.text('Sign in'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
 
-    expect(find.text('Enter dashboard'), findsOneWidget);
+    expect(find.text('Open dashboard'), findsOneWidget);
+
+    await tester.enterText(
+      find.widgetWithText(TextField, 'name@example.com'),
+      'hello@neolife.ai',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, 'At least 6 characters'),
+      'securepass',
+    );
+    await tester.tap(find.byType(Checkbox));
+    await tester.pump();
 
     await tester.tap(find.byKey(const ValueKey('auth-primary-signIn')));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 700));
 
-    expect(find.text('Live signals'), findsOneWidget);
-    expect(find.text('Placement mode'), findsOneWidget);
+    expect(find.text('Key wellness signals'), findsOneWidget);
+    expect(find.text('Recommended action'), findsOneWidget);
   });
 
   testWidgets('register flow opens dashboard', (tester) async {
@@ -91,17 +103,65 @@ void main() {
       ),
     );
 
-    await tester.tap(find.text('Create caregiver account'));
+    await tester.tap(find.text('Create account').first);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.text('Create account'), findsWidgets);
 
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Enter caregiver name'),
+      'Chanda',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Enter infant profile name'),
+      'Baby Neo',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, 'name@example.com'),
+      'hello@neolife.ai',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, 'At least 6 characters'),
+      'securepass',
+    );
+    await tester.tap(find.byType(Checkbox));
+    await tester.pump();
+
     await tester.tap(find.byKey(const ValueKey('auth-primary-register')));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 700));
 
-    expect(find.text('Live signals'), findsOneWidget);
-    expect(find.text('Alert summary'), findsOneWidget);
+    expect(find.text('Key wellness signals'), findsOneWidget);
+    expect(find.text('Recent changes'), findsOneWidget);
+  });
+
+  testWidgets('profile screen renders after authentication', (tester) async {
+    final session = AppSessionController()
+      ..completeAuthentication(
+        email: 'hello@neolife.ai',
+        caregiverName: 'Chanda',
+        infantName: 'Baby Neo',
+      );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<AppSessionController>.value(value: session),
+          ChangeNotifierProvider(create: (_) => NeoLifeController()),
+        ],
+        child: const NeoLifeApp(),
+      ),
+    );
+
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 600));
+
+    await tester.tap(find.text('Profile'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 700));
+
+    expect(find.text('Family, preferences, and trust'), findsOneWidget);
+    expect(find.text('Care team visibility'), findsOneWidget);
   });
 }

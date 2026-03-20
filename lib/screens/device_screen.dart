@@ -34,66 +34,105 @@ class DeviceScreen extends StatelessWidget {
                 eyebrow: 'Device setup',
                 title: 'Wearable and placement',
                 subtitle:
-                    'Connection, fit, placement, and signal confidence are grouped here for quick adjustments.',
+                    'Connection, fit, placement, and signal quality are grouped here so caregivers can adjust the device quickly.',
                 statusLabel:
                     controller.isConnected ? 'Connected' : 'Disconnected',
               ),
               const SizedBox(height: 18),
-              _DeviceOverviewCard(
-                isConnected: controller.isConnected,
-                status: controller.status,
-                placementMode: controller.placementMode,
-                qualityValue: controller.signalQuality,
-                onToggleConnection: controller.toggleConnection,
-                onOpenTrends: onOpenTrends,
-                onOpenAlerts: onOpenAlerts,
-              ),
-              const SizedBox(height: 18),
               LayoutBuilder(
                 builder: (context, constraints) {
-                  final wide = constraints.maxWidth >= 860;
-                  final placement = PlacementModeCard(
-                    selectedMode: controller.placementMode,
-                    helperText: controller.placementMode.helperText,
-                    onChanged: controller.setPlacementMode,
+                  final wide = constraints.maxWidth >= 940;
+                  final overview = _DeviceOverviewCard(
+                    isConnected: controller.isConnected,
+                    status: controller.status,
+                    placementMode: controller.placementMode,
+                    qualityValue: controller.signalQuality,
+                    onToggleConnection: controller.toggleConnection,
+                    onOpenTrends: onOpenTrends,
+                    onOpenAlerts: onOpenAlerts,
                   );
                   final quality = QualityIndicatorCard(
                     value: controller.signalQuality,
                     label: controller.qualityLabel,
                   );
 
-                  return wide
-                      ? Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(flex: 7, child: placement),
-                            const SizedBox(width: 16),
-                            Expanded(flex: 5, child: quality),
-                          ],
-                        )
-                      : Column(
-                          children: [
-                            placement,
-                            const SizedBox(height: 16),
-                            quality,
-                          ],
-                        );
+                  if (!wide) {
+                    return Column(
+                      children: [
+                        overview,
+                        const SizedBox(height: 16),
+                        quality,
+                      ],
+                    );
+                  }
+
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(flex: 8, child: overview),
+                      const SizedBox(width: 18),
+                      Expanded(flex: 4, child: quality),
+                    ],
+                  );
                 },
               ),
-              const SizedBox(height: 18),
-              _SetupStepsCard(
-                currentMode: controller.placementMode,
+              const SizedBox(height: 24),
+              const _DeviceSectionHeader(
+                eyebrow: 'Setup',
+                title: 'Placement and fit',
+                subtitle:
+                    'Choose the wearable position and review the fit notes together so changes remain deliberate.',
               ),
-              const SizedBox(height: 18),
+              const SizedBox(height: 14),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final wide = constraints.maxWidth >= 940;
+                  final placement = PlacementModeCard(
+                    selectedMode: controller.placementMode,
+                    helperText: controller.placementMode.helperText,
+                    onChanged: controller.setPlacementMode,
+                  );
+                  final steps = _SetupStepsCard(
+                    currentMode: controller.placementMode,
+                  );
+
+                  if (!wide) {
+                    return Column(
+                      children: [
+                        placement,
+                        const SizedBox(height: 16),
+                        steps,
+                      ],
+                    );
+                  }
+
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(flex: 7, child: placement),
+                      const SizedBox(width: 18),
+                      Expanded(flex: 5, child: steps),
+                    ],
+                  );
+                },
+              ),
+              const SizedBox(height: 24),
+              const _DeviceSectionHeader(
+                eyebrow: 'Hardware',
+                title: 'Product showcase',
+                subtitle:
+                    'This section stays visually secondary so setup guidance remains more important than the hardware render.',
+              ),
+              const SizedBox(height: 14),
               const ProductShowcaseCard(
                 eyebrow: 'Hardware preview',
                 title: 'Sensor pod detail',
                 description:
-                    'A calm product view helps the prototype feel closer to a real health-tech app without adding more dashboard clutter.',
+                    'A calmer hardware view supports product trust without competing with the setup workflow.',
                 imageAssetPath: 'assets/images/pod_exploded.png',
                 tags: [
                   'BLE-ready architecture',
-                  'Demo hardware render',
+                  'NeoLife hardware concept',
                   'Future sensor integration',
                 ],
               ),
@@ -144,7 +183,7 @@ class _DeviceOverviewCard extends StatelessWidget {
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final wide = constraints.maxWidth >= 840;
+          final wide = constraints.maxWidth >= 780;
           final copy = Padding(
             padding: const EdgeInsets.all(22),
             child: Column(
@@ -169,7 +208,22 @@ class _DeviceOverviewCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  'Placement, fit, and connection stay together here so caregivers can adjust the wearable quickly.',
+                  'Connection and fit',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.primary,
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  isConnected
+                      ? 'The wearable is ready for monitoring.'
+                      : 'The wearable is paused right now.',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Keep placement, confidence, and connection in one place so the caregiver can correct setup issues quickly.',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: 18),
@@ -197,7 +251,8 @@ class _DeviceOverviewCard extends StatelessWidget {
                   children: [
                     FilledButton(
                       onPressed: onToggleConnection,
-                      child: Text(isConnected ? 'Disconnect pod' : 'Connect pod'),
+                      child:
+                          Text(isConnected ? 'Disconnect pod' : 'Connect pod'),
                     ),
                     OutlinedButton(
                       onPressed: onOpenTrends,
@@ -216,57 +271,30 @@ class _DeviceOverviewCard extends StatelessWidget {
           final visual = Padding(
             padding: EdgeInsets.fromLTRB(wide ? 0 : 20, 0, 20, 20),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(22),
+              borderRadius: BorderRadius.circular(24),
               child: AspectRatio(
-                aspectRatio: wide ? 1.0 : 1.45,
+                aspectRatio: wide ? 0.96 : 1.42,
                 child: Image.asset(image, fit: BoxFit.cover),
               ),
             ),
           );
 
-          return wide
-              ? Row(
-                  children: [
-                    Expanded(flex: 10, child: copy),
-                    Expanded(flex: 8, child: visual),
-                  ],
-                )
-              : Column(
-                  children: [
-                    copy,
-                    visual,
-                  ],
-                );
+          if (!wide) {
+            return Column(
+              children: [
+                copy,
+                visual,
+              ],
+            );
+          }
+
+          return Row(
+            children: [
+              Expanded(flex: 10, child: copy),
+              Expanded(flex: 7, child: visual),
+            ],
+          );
         },
-      ),
-    );
-  }
-}
-
-class _DeviceStat extends StatelessWidget {
-  const _DeviceStat({
-    required this.label,
-    required this.value,
-  });
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppTheme.surfaceSoft,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: Theme.of(context).textTheme.bodyMedium),
-          const SizedBox(height: 4),
-          Text(value, style: Theme.of(context).textTheme.titleMedium),
-        ],
       ),
     );
   }
@@ -297,7 +325,7 @@ class _SetupStepsCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.94),
+        gradient: AppTheme.panelGradient,
         borderRadius: BorderRadius.circular(28),
         border: Border.all(color: AppTheme.border),
         boxShadow: AppTheme.softShadow,
@@ -305,10 +333,13 @@ class _SetupStepsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Fit guidance', style: Theme.of(context).textTheme.titleLarge),
+          Text(
+            'Fit guidance',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
           const SizedBox(height: 6),
           Text(
-            'Use the current placement notes below to keep the demo realistic and clear.',
+            'Keep these setup notes visible while adjusting the wearable.',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 16),
@@ -342,6 +373,67 @@ class _SetupStepsCard extends StatelessWidget {
             ),
             if (item != guidance.last) const SizedBox(height: 10),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+class _DeviceSectionHeader extends StatelessWidget {
+  const _DeviceSectionHeader({
+    required this.eyebrow,
+    required this.title,
+    required this.subtitle,
+  });
+
+  final String eyebrow;
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          eyebrow,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppTheme.primary,
+                fontWeight: FontWeight.w800,
+              ),
+        ),
+        const SizedBox(height: 6),
+        Text(title, style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 4),
+        Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
+      ],
+    );
+  }
+}
+
+class _DeviceStat extends StatelessWidget {
+  const _DeviceStat({
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceSoft,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: Theme.of(context).textTheme.bodyMedium),
+          const SizedBox(height: 4),
+          Text(value, style: Theme.of(context).textTheme.titleMedium),
         ],
       ),
     );

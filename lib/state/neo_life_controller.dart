@@ -80,6 +80,33 @@ class NeoLifeController extends ChangeNotifier {
 
   String get connectionLabel => isConnected ? 'Connected' : 'Disconnected';
 
+  String get statusHeadline {
+    if (!isConnected) {
+      return 'Monitoring is paused';
+    }
+
+    return switch (_status) {
+      SensorStatus.stable => 'Infant wellness looks calm',
+      SensorStatus.unusual => 'A trend needs review',
+      SensorStatus.anomaly => 'Immediate review is recommended',
+    };
+  }
+
+  String get statusCaption {
+    if (!isConnected) {
+      return 'Reconnect the pod to resume live monitoring and refresh the latest wellness values.';
+    }
+
+    return switch (_status) {
+      SensorStatus.stable =>
+        'Live signals are stable and readable across the latest sample window.',
+      SensorStatus.unusual =>
+        'A live signal is shifting. Review the current changes before they become sustained.',
+      SensorStatus.anomaly =>
+        'A sustained anomaly is active across recent samples and should be reviewed first.',
+    };
+  }
+
   String get dashboardSummary {
     if (!isConnected) {
       return 'Reconnect the pod to resume the live wellness feed.';
@@ -87,12 +114,74 @@ class NeoLifeController extends ChangeNotifier {
 
     return switch (_status) {
       SensorStatus.stable =>
-        'All live signals are calm and within the expected demo range.',
+        'All live signals are calm and within the expected wellness range.',
       SensorStatus.unusual =>
         'A signal shift needs review. Open Alerts for more detail.',
       SensorStatus.anomaly =>
         'A stronger alert is active. Review the latest alert detail.',
     };
+  }
+
+  String get recommendedActionTitle {
+    if (!isConnected) {
+      return 'Reconnect the pod';
+    }
+
+    return switch (_status) {
+      SensorStatus.stable => 'Continue monitoring',
+      SensorStatus.unusual => 'Review recent changes',
+      SensorStatus.anomaly => 'Open alert details',
+    };
+  }
+
+  String get recommendedActionDetail {
+    if (!isConnected) {
+      return 'Reconnect to restore the live feed and resume sensor confidence checks.';
+    }
+
+    return switch (_status) {
+      SensorStatus.stable =>
+        'Keep the current placement and use Trends to confirm the baseline remains steady.',
+      SensorStatus.unusual =>
+        'Check placement and open Alerts to review the latest cause before adjusting the device.',
+      SensorStatus.anomaly =>
+        'Open Alerts first, then confirm device fit and placement if the signal remains elevated.',
+    };
+  }
+
+  String get attentionLabel {
+    if (!isConnected) {
+      return 'Feed paused';
+    }
+
+    return switch (_status) {
+      SensorStatus.stable => 'No active concern',
+      SensorStatus.unusual => 'Needs attention',
+      SensorStatus.anomaly => 'High priority',
+    };
+  }
+
+  String get focusMetricTitle {
+    final explanation = _alertExplanation.toLowerCase();
+    if (explanation.contains('temperature')) {
+      return 'Temperature Trend';
+    }
+    if (explanation.contains('heart')) {
+      return 'Heart Rate';
+    }
+    if (explanation.contains('oxygen') || explanation.contains('spo2')) {
+      return 'SpO2';
+    }
+    if (explanation.contains('breathing')) {
+      return 'Breathing Trend';
+    }
+    if (explanation.contains('motion')) {
+      return 'Motion Trend';
+    }
+
+    return _placementMode == PlacementMode.ankle
+        ? 'Heart Rate'
+        : 'Breathing Trend';
   }
 
   Future<void> toggleConnection() async {
