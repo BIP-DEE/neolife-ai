@@ -282,8 +282,8 @@ class _WelcomeCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.92),
-        borderRadius: BorderRadius.circular(30),
+        gradient: AppTheme.panelGradient,
+        borderRadius: BorderRadius.circular(32),
         border: Border.all(color: AppTheme.border),
         boxShadow: AppTheme.softShadow,
       ),
@@ -307,11 +307,13 @@ class _WelcomeCard extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             'Infant wellness, clearly presented.',
-            style: Theme.of(context).textTheme.headlineMedium,
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  height: 1.05,
+                ),
           ),
           const SizedBox(height: 10),
           Text(
-            'NeoLife AI keeps live signals calm, readable, and demo-ready.',
+            'NeoLife AI keeps live signals calm, readable, and presentation-ready.',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 18),
@@ -437,8 +439,8 @@ class _HeroVisual extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.92),
-        borderRadius: BorderRadius.circular(30),
+        gradient: AppTheme.panelGradient,
+        borderRadius: BorderRadius.circular(32),
         border: Border.all(color: AppTheme.border),
         boxShadow: AppTheme.softShadow,
       ),
@@ -473,10 +475,11 @@ class _HeroVisual extends StatelessWidget {
                 right: 18,
                 bottom: 18,
                 child: Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.90),
-                    borderRadius: BorderRadius.circular(18),
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.30)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -658,8 +661,8 @@ class _AuthFormCardState extends State<_AuthFormCard> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.94),
-        borderRadius: BorderRadius.circular(30),
+        gradient: AppTheme.panelGradient,
+        borderRadius: BorderRadius.circular(32),
         border: Border.all(color: AppTheme.border),
         boxShadow: AppTheme.softShadow,
       ),
@@ -721,8 +724,8 @@ class _AuthFormCardState extends State<_AuthFormCard> {
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: AppTheme.surfaceSoft,
-              borderRadius: BorderRadius.circular(18),
+              color: Colors.white.withValues(alpha: 0.84),
+              borderRadius: BorderRadius.circular(20),
               border: Border.all(color: AppTheme.border),
             ),
             child: Row(

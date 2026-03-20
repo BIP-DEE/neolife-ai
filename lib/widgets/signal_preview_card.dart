@@ -39,15 +39,8 @@ class SignalPreviewCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.white.withValues(alpha: 0.96),
-            AppTheme.surfaceSoft.withValues(alpha: 0.96),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(28),
+        gradient: AppTheme.panelGradient,
+        borderRadius: BorderRadius.circular(30),
         border: Border.all(color: AppTheme.border),
         boxShadow: AppTheme.softShadow,
       ),
@@ -130,8 +123,8 @@ class SignalPreviewCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.86),
-              borderRadius: BorderRadius.circular(22),
+              color: Colors.white.withValues(alpha: 0.90),
+              borderRadius: BorderRadius.circular(24),
               border: Border.all(color: AppTheme.border),
             ),
             child: SizedBox(

@@ -199,7 +199,7 @@ class _TrendOverviewCard extends StatelessWidget {
                   value: '${reading?.spo2 ?? '--'}%',
                 ),
                 _TrendStat(
-                  label: 'Current temp',
+                  label: 'Current temperature',
                   value: reading == null
                       ? '--'
                       : '${reading!.temperature.toStringAsFixed(1)} C',

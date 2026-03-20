@@ -137,8 +137,8 @@ class _DeviceOverviewCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.94),
-        borderRadius: BorderRadius.circular(28),
+        gradient: AppTheme.panelGradient,
+        borderRadius: BorderRadius.circular(30),
         border: Border.all(color: AppTheme.border),
         boxShadow: AppTheme.softShadow,
       ),
@@ -169,7 +169,7 @@ class _DeviceOverviewCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  'Placement and connection stay together here so caregivers can resolve fit issues quickly.',
+                  'Placement, fit, and connection stay together here so caregivers can adjust the wearable quickly.',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: 18),
@@ -197,7 +197,7 @@ class _DeviceOverviewCard extends StatelessWidget {
                   children: [
                     FilledButton(
                       onPressed: onToggleConnection,
-                      child: Text(isConnected ? 'Disconnect' : 'Connect'),
+                      child: Text(isConnected ? 'Disconnect pod' : 'Connect pod'),
                     ),
                     OutlinedButton(
                       onPressed: onOpenTrends,
@@ -284,13 +284,13 @@ class _SetupStepsCard extends StatelessWidget {
     final guidance = currentMode == PlacementMode.ankle
         ? const [
             'Wrap the ankle band so the pod sits flat without pinching.',
-            'Keep the infant warm to preserve peripheral temperature quality.',
+            'Keep the infant warm to preserve temperature trend quality.',
             'Expect motion to influence the feed more during active moments.',
           ]
         : const [
             'Place the chest band snugly across the upper torso.',
             'Confirm smooth breathing movement beneath the wearable.',
-            'Use chest placement when breathing effort is the main focus.',
+            'Use chest placement when breathing effort and temperature trend are the main focus.',
           ];
 
     return Container(

@@ -62,9 +62,7 @@ class NeoLifeController extends ChangeNotifier {
   }
 
   String get temperatureTitle {
-    return _placementMode == PlacementMode.ankle
-        ? 'Peripheral Temp'
-        : 'Core Temp';
+    return 'Temperature Trend';
   }
 
   double get signalQuality => _latestReading?.signalQuality ?? 0.84;
@@ -81,6 +79,21 @@ class NeoLifeController extends ChangeNotifier {
   }
 
   String get connectionLabel => isConnected ? 'Connected' : 'Disconnected';
+
+  String get dashboardSummary {
+    if (!isConnected) {
+      return 'Reconnect the pod to resume the live wellness feed.';
+    }
+
+    return switch (_status) {
+      SensorStatus.stable =>
+        'All live signals are calm and within the expected demo range.',
+      SensorStatus.unusual =>
+        'A signal shift needs review. Open Alerts for more detail.',
+      SensorStatus.anomaly =>
+        'A stronger alert is active. Review the latest alert detail.',
+    };
+  }
 
   Future<void> toggleConnection() async {
     if (isConnected) {
@@ -166,7 +179,7 @@ class NeoLifeController extends ChangeNotifier {
 
     if (reading.temperature >= 38.2) {
       computedStatus = _maxStatus(computedStatus, SensorStatus.anomaly);
-      issues.add('high temperature');
+      issues.add('temperature trend elevated');
     } else if (reading.temperature >= 37.6 || temperatureTrend == 'Rising') {
       computedStatus = _maxStatus(computedStatus, SensorStatus.unusual);
       issues.add('rising temperature trend');

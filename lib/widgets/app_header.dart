@@ -28,10 +28,10 @@ class AppHeader extends StatelessWidget {
 
         return Container(
           width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
+          padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.90),
-            borderRadius: BorderRadius.circular(28),
+            gradient: AppTheme.panelGradient,
+            borderRadius: BorderRadius.circular(30),
             border: Border.all(color: AppTheme.border),
             boxShadow: AppTheme.softShadow,
           ),
@@ -41,29 +41,37 @@ class AppHeader extends StatelessWidget {
               LayoutBuilder(
                 builder: (context, constraints) {
                   final stacked = constraints.maxWidth < 720;
-                  final utilitySection = Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      if (statusLabel != null)
-                        _HeaderChip(
-                          label: statusLabel!,
-                          icon: Icons.circle,
+                  final utilitySection = Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.76),
+                      borderRadius: BorderRadius.circular(22),
+                      border: Border.all(color: AppTheme.border),
+                    ),
+                    child: Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        if (statusLabel != null)
+                          _HeaderChip(
+                            label: statusLabel!,
+                            icon: Icons.circle,
+                          ),
+                        if (shell != null)
+                          _UtilityButton(
+                            icon: Icons.settings_outlined,
+                            tooltip: 'Profile & Settings',
+                            onTap: () => shell.goTo(4),
+                          ),
+                        _AvatarMenu(
+                          caregiverName: session.caregiverName,
+                          onOpenProfile:
+                              shell == null ? null : () => shell.goTo(4),
+                          onLogout: context.read<AppSessionController>().signOut,
                         ),
-                      if (shell != null)
-                        _UtilityButton(
-                          icon: Icons.settings_outlined,
-                          tooltip: 'Profile & Settings',
-                          onTap: () => shell.goTo(4),
-                        ),
-                      _AvatarMenu(
-                        caregiverName: session.caregiverName,
-                        onOpenProfile:
-                            shell == null ? null : () => shell.goTo(4),
-                        onLogout: context.read<AppSessionController>().signOut,
-                      ),
-                    ],
+                      ],
+                    ),
                   );
 
                   if (stacked) {
@@ -88,17 +96,37 @@ class AppHeader extends StatelessWidget {
               ),
               if (title != null && title!.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                const Divider(height: 1),
-                const SizedBox(height: 14),
-                if (eyebrow != null && eyebrow!.isNotEmpty) ...[
-                  Text(
-                    eyebrow!,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppTheme.primary,
-                          fontWeight: FontWeight.w700,
-                        ),
+                Container(
+                  width: double.infinity,
+                  height: 1,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppTheme.border.withValues(alpha: 0.0),
+                        AppTheme.border,
+                        AppTheme.border.withValues(alpha: 0.0),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 4),
+                ),
+                const SizedBox(height: 16),
+                if (eyebrow != null && eyebrow!.isNotEmpty) ...[
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: AppTheme.secondarySoft,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      eyebrow!,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppTheme.primaryDeep,
+                            fontWeight: FontWeight.w800,
+                          ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
                 ],
                 Text(
                   title!,
@@ -144,7 +172,7 @@ class _HeaderChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
       decoration: BoxDecoration(
         color: AppTheme.surfaceSoft,
         borderRadius: BorderRadius.circular(999),
@@ -187,8 +215,8 @@ class _UtilityButton extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Container(
-          width: 42,
-          height: 42,
+          width: 44,
+          height: 44,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
@@ -198,7 +226,7 @@ class _UtilityButton extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(18),
             border: Border.all(color: AppTheme.border),
           ),
           alignment: Alignment.center,
@@ -246,7 +274,7 @@ class _AvatarMenu extends StatelessWidget {
         ),
       ],
       child: Container(
-        height: 42,
+        height: 44,
         padding: const EdgeInsets.symmetric(horizontal: 10),
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -257,7 +285,7 @@ class _AvatarMenu extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(color: AppTheme.border),
         ),
         child: Row(

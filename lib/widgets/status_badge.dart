@@ -32,6 +32,15 @@ class StatusBadge extends StatelessWidget {
         border: Border.all(
           color: inverted ? color : color.withValues(alpha: 0.18),
         ),
+        boxShadow: pulse
+            ? [
+                BoxShadow(
+                  color: color.withValues(alpha: 0.08),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
+              ]
+            : null,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

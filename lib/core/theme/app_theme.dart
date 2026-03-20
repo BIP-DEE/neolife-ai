@@ -1,40 +1,45 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const Color background = Color(0xFFF5F8FD);
-  static const Color backgroundAlt = Color(0xFFFFFCF7);
+  static const Color background = Color(0xFFF4F7FC);
+  static const Color backgroundAlt = Color(0xFFFBFCFF);
   static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceSoft = Color(0xFFF3F7FC);
-  static const Color surfaceMuted = Color(0xFFEEF3F9);
-  static const Color primary = Color(0xFF184C98);
+  static const Color surfaceSoft = Color(0xFFF6F8FC);
+  static const Color surfaceMuted = Color(0xFFEEF2F8);
+  static const Color primary = Color(0xFF1A4FA7);
   static const Color primaryDeep = Color(0xFF0A214F);
-  static const Color secondary = Color(0xFF22B3E6);
-  static const Color secondarySoft = Color(0xFFDDF4FF);
-  static const Color accent = Color(0xFF7787FF);
-  static const Color accentSoft = Color(0xFFE8ECFF);
-  static const Color blush = Color(0xFFF8E9E6);
-  static const Color sand = Color(0xFFF7F0E9);
-  static const Color stable = Color(0xFF3789A3);
+  static const Color secondary = Color(0xFF1FB4DA);
+  static const Color secondarySoft = Color(0xFFDDF5FB);
+  static const Color accent = Color(0xFF6F82FF);
+  static const Color accentSoft = Color(0xFFE9ECFF);
+  static const Color blush = Color(0xFFF7EDEC);
+  static const Color sand = Color(0xFFFBF4EB);
+  static const Color stable = Color(0xFF2F8CA8);
   static const Color warning = Color(0xFFD8A047);
   static const Color danger = Color(0xFFE07279);
   static const Color textPrimary = Color(0xFF152440);
   static const Color textSecondary = Color(0xFF6D7A93);
-  static const Color border = Color(0xFFE2EAF4);
-  static const Color shadow = Color(0x14223857);
+  static const Color border = Color(0xFFE3EAF5);
+  static const Color shadow = Color(0x12223857);
 
   static List<BoxShadow> get softShadow => [
         const BoxShadow(
           color: shadow,
-          blurRadius: 28,
-          offset: Offset(0, 16),
+          blurRadius: 32,
+          offset: Offset(0, 18),
+        ),
+        const BoxShadow(
+          color: Color(0x08FFFFFF),
+          blurRadius: 10,
+          offset: Offset(0, -2),
         ),
       ];
 
   static List<BoxShadow> get strongShadow => [
         const BoxShadow(
           color: shadow,
-          blurRadius: 36,
-          offset: Offset(0, 20),
+          blurRadius: 42,
+          offset: Offset(0, 24),
         ),
       ];
 
@@ -50,12 +55,22 @@ class AppTheme {
 
   static LinearGradient get ambientGradient => const LinearGradient(
         colors: [
+          Color(0xFFF8FBFF),
           background,
           backgroundAlt,
-          Color(0xFFF0F7FF),
+          Color(0xFFF8F5FF),
         ],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
+
+  static LinearGradient get panelGradient => LinearGradient(
+        colors: [
+          Colors.white.withValues(alpha: 0.98),
+          surfaceSoft.withValues(alpha: 0.98),
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
       );
 
   static ThemeData get theme {
@@ -92,45 +107,45 @@ class AppTheme {
       ),
       textTheme: base.textTheme.copyWith(
         displaySmall: const TextStyle(
-          fontSize: 32,
+          fontSize: 34,
           height: 1.06,
           fontWeight: FontWeight.w700,
           color: textPrimary,
-          letterSpacing: -1.1,
+          letterSpacing: -1.2,
         ),
         headlineMedium: const TextStyle(
-          fontSize: 26,
-          height: 1.12,
+          fontSize: 27,
+          height: 1.14,
           fontWeight: FontWeight.w700,
           color: textPrimary,
-          letterSpacing: -0.7,
+          letterSpacing: -0.8,
         ),
         headlineSmall: const TextStyle(
-          fontSize: 21,
+          fontSize: 22,
           height: 1.18,
           fontWeight: FontWeight.w700,
           color: textPrimary,
-          letterSpacing: -0.4,
+          letterSpacing: -0.5,
         ),
         titleLarge: const TextStyle(
-          fontSize: 18,
+          fontSize: 19,
           fontWeight: FontWeight.w700,
           color: textPrimary,
-          letterSpacing: -0.3,
+          letterSpacing: -0.35,
         ),
         titleMedium: const TextStyle(
-          fontSize: 15,
+          fontSize: 15.5,
           fontWeight: FontWeight.w700,
           color: textPrimary,
         ),
         bodyLarge: const TextStyle(
-          fontSize: 14,
-          height: 1.52,
+          fontSize: 14.5,
+          height: 1.56,
           color: textPrimary,
         ),
         bodyMedium: const TextStyle(
-          fontSize: 13,
-          height: 1.42,
+          fontSize: 13.5,
+          height: 1.48,
           color: textSecondary,
         ),
         labelLarge: const TextStyle(
@@ -144,13 +159,13 @@ class AppTheme {
           elevation: 0,
           backgroundColor: primaryDeep,
           foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 15),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           textStyle: const TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w700,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(20),
           ),
         ),
       ),
@@ -158,14 +173,14 @@ class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: textPrimary,
           side: const BorderSide(color: border),
-          backgroundColor: Colors.white.withValues(alpha: 0.86),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 15),
+          backgroundColor: Colors.white.withValues(alpha: 0.92),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           textStyle: const TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w700,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(20),
           ),
         ),
       ),
@@ -188,7 +203,7 @@ class AppTheme {
           backgroundColor: Colors.white.withValues(alpha: 0.88),
           padding: const EdgeInsets.all(12),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(18),
           ),
         ),
       ),
@@ -247,7 +262,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: surfaceSoft,
+        fillColor: Colors.white.withValues(alpha: 0.92),
         hintStyle: const TextStyle(
           color: textSecondary,
           fontSize: 13,

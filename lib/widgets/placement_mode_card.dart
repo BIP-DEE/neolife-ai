@@ -21,15 +21,8 @@ class PlacementModeCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.white.withValues(alpha: 0.96),
-            AppTheme.surfaceSoft.withValues(alpha: 0.96),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(28),
+        gradient: AppTheme.panelGradient,
+        borderRadius: BorderRadius.circular(30),
         border: Border.all(color: AppTheme.border),
         boxShadow: AppTheme.softShadow,
       ),
@@ -55,14 +48,14 @@ class PlacementModeCard extends StatelessWidget {
                 final vertical = constraints.maxWidth < 430;
                 final ankle = _PlacementToggleButton(
                   label: 'Ankle',
-                  caption: 'Motion + peripheral temp',
+                  caption: 'Motion + temp trend',
                   icon: Icons.directions_walk_rounded,
                   selected: selectedMode == PlacementMode.ankle,
                   onTap: () => onChanged(PlacementMode.ankle),
                 );
                 final chest = _PlacementToggleButton(
                   label: 'Chest',
-                  caption: 'Breathing + core temp',
+                  caption: 'Breathing + temp trend',
                   icon: Icons.air_rounded,
                   selected: selectedMode == PlacementMode.chest,
                   onTap: () => onChanged(PlacementMode.chest),
@@ -106,12 +99,17 @@ class PlacementModeCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Text(
-                    helperText,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppTheme.textPrimary,
-                          fontWeight: FontWeight.w700,
-                        ),
+                  child: SizedBox(
+                    height: 38,
+                    child: Text(
+                      helperText,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppTheme.textPrimary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                    ),
                   ),
                 ),
               ],

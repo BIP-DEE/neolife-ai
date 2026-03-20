@@ -22,10 +22,10 @@ class AmbientBackdrop extends StatelessWidget {
             child: Stack(
               children: [
                 Positioned(
-                  top: -120,
-                  right: -30,
+                  top: -140,
+                  right: -40,
                   child: _GlowOrb(
-                    size: 280,
+                    size: 320,
                     colors: [
                       AppTheme.secondary.withValues(alpha: 0.16),
                       AppTheme.primary.withValues(alpha: 0.02),
@@ -33,24 +33,35 @@ class AmbientBackdrop extends StatelessWidget {
                   ),
                 ),
                 Positioned(
-                  top: 180,
-                  left: -60,
+                  top: 140,
+                  left: -80,
                   child: _GlowOrb(
-                    size: 240,
+                    size: 300,
                     colors: [
-                      AppTheme.blush.withValues(alpha: 0.38),
+                      AppTheme.blush.withValues(alpha: 0.42),
                       AppTheme.blush.withValues(alpha: 0.02),
                     ],
                   ),
                 ),
                 Positioned(
-                  bottom: 80,
-                  right: -80,
+                  bottom: 40,
+                  right: -100,
                   child: _GlowOrb(
-                    size: 260,
+                    size: 340,
                     colors: [
-                      AppTheme.primary.withValues(alpha: 0.12),
+                      AppTheme.primary.withValues(alpha: 0.14),
                       AppTheme.primaryDeep.withValues(alpha: 0.01),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  bottom: 120,
+                  left: -40,
+                  child: _GlowOrb(
+                    size: 220,
+                    colors: [
+                      AppTheme.sand.withValues(alpha: 0.44),
+                      AppTheme.sand.withValues(alpha: 0.02),
                     ],
                   ),
                 ),

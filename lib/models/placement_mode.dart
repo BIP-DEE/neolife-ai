@@ -22,9 +22,9 @@ extension PlacementModeX on PlacementMode {
   String get helperText {
     switch (this) {
       case PlacementMode.ankle:
-        return 'Focus on peripheral temperature and limb motion.';
+        return 'Focus on temperature trend and limb motion.';
       case PlacementMode.chest:
-        return 'Focus on core temperature and breathing effort.';
+        return 'Focus on temperature trend and breathing effort.';
     }
   }
 }

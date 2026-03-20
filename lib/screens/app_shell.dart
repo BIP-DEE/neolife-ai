@@ -5,6 +5,7 @@ import '../core/theme/app_theme.dart';
 import '../state/app_session_controller.dart';
 import '../widgets/ambient_backdrop.dart';
 import '../widgets/app_shell_scope.dart';
+import '../widgets/brand_mark.dart';
 import 'alerts_screen.dart';
 import 'device_screen.dart';
 import 'home_screen.dart';
@@ -149,13 +150,13 @@ class _NeoBottomBar extends StatelessWidget {
       minimum: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.94),
-          borderRadius: BorderRadius.circular(26),
+          gradient: AppTheme.panelGradient,
+          borderRadius: BorderRadius.circular(30),
           border: Border.all(color: AppTheme.border),
           boxShadow: AppTheme.softShadow,
         ),
         child: Padding(
-          padding: const EdgeInsets.all(6),
+          padding: const EdgeInsets.all(8),
           child: Row(
             children: [
               for (var i = 0; i < items.length; i++)
@@ -193,18 +194,28 @@ class _NavButton extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 240),
         curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(20),
           gradient: selected
               ? LinearGradient(
                   colors: [
-                    AppTheme.surfaceSoft,
+                    AppTheme.secondarySoft,
                     Colors.white,
                   ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 )
+              : null,
+          border: selected ? Border.all(color: AppTheme.border) : null,
+          boxShadow: selected
+              ? [
+                  BoxShadow(
+                    color: AppTheme.secondary.withValues(alpha: 0.10),
+                    blurRadius: 18,
+                    offset: const Offset(0, 10),
+                  ),
+                ]
               : null,
         ),
         child: Column(
@@ -259,24 +270,19 @@ class _AdaptiveRail extends StatelessWidget {
       width: 232,
       padding: const EdgeInsets.fromLTRB(14, 18, 14, 14),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.90),
-        borderRadius: BorderRadius.circular(30),
+        gradient: AppTheme.panelGradient,
+        borderRadius: BorderRadius.circular(32),
         border: Border.all(color: AppTheme.border),
         boxShadow: AppTheme.softShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Text(
-              'NeoLife AI',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: AppTheme.primaryDeep,
-                  ),
-            ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: _RailBrand(),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
@@ -300,10 +306,11 @@ class _AdaptiveRail extends StatelessWidget {
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: AppTheme.surfaceSoft,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(color: AppTheme.border),
             ),
             child: Text(
-              'Adaptive navigation automatically shifts to a side rail on larger screens.',
+              'A calmer layout appears on larger screens so key monitoring states stay easy to scan.',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
@@ -330,13 +337,24 @@ class _SidebarButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(20),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 220),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
         decoration: BoxDecoration(
-          color: selected ? AppTheme.secondarySoft : Colors.transparent,
-          borderRadius: BorderRadius.circular(18),
+          gradient: selected
+              ? LinearGradient(
+                  colors: [
+                    AppTheme.secondarySoft,
+                    Colors.white,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : null,
+          color: selected ? null : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          border: selected ? Border.all(color: AppTheme.border) : null,
         ),
         child: Row(
           children: [
@@ -369,6 +387,41 @@ class _SidebarItem {
   final int index;
   final String label;
   final IconData icon;
+}
+
+class _RailBrand extends StatelessWidget {
+  const _RailBrand();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 40,
+          height: 34,
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          decoration: BoxDecoration(
+            gradient: AppTheme.primaryGradient,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          alignment: Alignment.center,
+          child: const FittedBox(
+            fit: BoxFit.contain,
+            child: BrandSymbol(compact: true),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            'NeoLife AI',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: AppTheme.primaryDeep,
+                ),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 class _NavItem {

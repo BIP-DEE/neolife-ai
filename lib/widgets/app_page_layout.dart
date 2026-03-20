@@ -13,11 +13,11 @@ class AppPageLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(20, 18, 20, bottomSpacing),
+      padding: EdgeInsets.fromLTRB(22, 22, 22, bottomSpacing),
       child: Align(
         alignment: Alignment.topCenter,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 980),
+          constraints: const BoxConstraints(maxWidth: 1000),
           child: child,
         ),
       ),

@@ -44,6 +44,7 @@ class HomeScreen extends StatelessWidget {
                 isConnected: controller.isConnected,
                 connectionLabel: controller.connectionLabel,
                 status: controller.status,
+                dashboardSummary: controller.dashboardSummary,
                 qualityValue: controller.signalQuality,
                 placementLabel: controller.placementMode.shortLabel,
                 placementHelperText: controller.placementMode.helperText,
@@ -136,7 +137,7 @@ class HomeScreen extends StatelessWidget {
                   );
                   final alerts = _DashboardAlertsCard(
                     status: controller.status,
-                    explanation: controller.alertExplanation,
+                    summaryText: controller.dashboardSummary,
                     alertCount: controller.alertHistory.length,
                     latestAlert: controller.alertHistory.isEmpty
                         ? null
@@ -235,6 +236,7 @@ class _DashboardHeroCard extends StatelessWidget {
     required this.isConnected,
     required this.connectionLabel,
     required this.status,
+    required this.dashboardSummary,
     required this.qualityValue,
     required this.placementLabel,
     required this.placementHelperText,
@@ -248,6 +250,7 @@ class _DashboardHeroCard extends StatelessWidget {
   final bool isConnected;
   final String connectionLabel;
   final SensorStatus status;
+  final String dashboardSummary;
   final double qualityValue;
   final String placementLabel;
   final String placementHelperText;
@@ -334,42 +337,71 @@ class _DashboardHeroCard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
+        const SizedBox(height: 18),
+        GridView.count(
+          crossAxisCount: 2,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+          childAspectRatio: 1.85,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
           children: [
-            StatusBadge(
-              label: connectionLabel,
-              color: isConnected ? AppTheme.secondary : AppTheme.danger,
+            _HeroInfoTile(
+              label: 'Feed',
+              value: connectionLabel,
+              icon: isConnected
+                  ? Icons.bluetooth_connected_rounded
+                  : Icons.pause_circle_outline_rounded,
+              valueColor: isConnected ? AppTheme.secondary : AppTheme.danger,
             ),
-            StatusBadge(label: status.label, color: statusColor),
+            _HeroInfoTile(
+              label: 'Status',
+              value: status.label,
+              icon: Icons.health_and_safety_outlined,
+              valueColor: statusColor,
+            ),
+            _HeroInfoTile(
+              label: 'Confidence',
+              value: '${(qualityValue * 100).round()}%',
+              icon: Icons.shield_outlined,
+              valueColor: AppTheme.primaryDeep,
+            ),
+            _HeroInfoTile(
+              label: 'Placement',
+              value: placementLabel,
+              icon: Icons.place_outlined,
+              valueColor: AppTheme.accent,
+            ),
           ],
         ),
-        const SizedBox(height: 18),
-        Row(
-          children: [
-            Expanded(
-              child: _HeroStat(
-                label: 'Confidence',
-                value: '${(qualityValue * 100).round()}%',
-              ),
+        const SizedBox(height: 14),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.82),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: AppTheme.border),
+          ),
+          child: SizedBox(
+            height: 42,
+            child: Text(
+              dashboardSummary,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _HeroStat(
-                label: 'Placement',
-                value: placementLabel,
-              ),
-            ),
-          ],
+          ),
         ),
-        const SizedBox(height: 18),
-        Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          children: [
-            FilledButton.icon(
+        const SizedBox(height: 16),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final stacked = constraints.maxWidth < 430;
+            final connectButton = FilledButton.icon(
               onPressed: onToggleConnection,
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(48),
+              ),
               icon: Icon(
                 isConnected
                     ? Icons.pause_circle_outline_rounded
@@ -377,13 +409,34 @@ class _DashboardHeroCard extends StatelessWidget {
                 size: 18,
               ),
               label: Text(isConnected ? 'Pause feed' : 'Connect sensor'),
-            ),
-            OutlinedButton.icon(
+            );
+            final trendsButton = OutlinedButton.icon(
               onPressed: onOpenTrends,
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size.fromHeight(48),
+              ),
               icon: const Icon(Icons.show_chart_rounded, size: 18),
               label: const Text('View trends'),
-            ),
-          ],
+            );
+
+            if (stacked) {
+              return Column(
+                children: [
+                  SizedBox(width: double.infinity, child: connectButton),
+                  const SizedBox(height: 10),
+                  SizedBox(width: double.infinity, child: trendsButton),
+                ],
+              );
+            }
+
+            return Row(
+              children: [
+                Expanded(child: connectButton),
+                const SizedBox(width: 10),
+                Expanded(child: trendsButton),
+              ],
+            );
+          },
         ),
       ],
     );
@@ -392,15 +445,8 @@ class _DashboardHeroCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.white.withValues(alpha: 0.96),
-            AppTheme.surfaceSoft.withValues(alpha: 0.96),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(28),
+        gradient: AppTheme.panelGradient,
+        borderRadius: BorderRadius.circular(30),
         border: Border.all(color: AppTheme.border),
         boxShadow: AppTheme.softShadow,
       ),
@@ -410,7 +456,7 @@ class _DashboardHeroCard extends StatelessWidget {
           final accentPanel = ClipRRect(
             borderRadius: BorderRadius.circular(24),
             child: AspectRatio(
-              aspectRatio: wide ? 0.98 : 1.55,
+              aspectRatio: wide ? 0.98 : 1.16,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
@@ -418,11 +464,11 @@ class _DashboardHeroCard extends StatelessWidget {
                     duration: const Duration(milliseconds: 360),
                     switchInCurve: Curves.easeOutCubic,
                     switchOutCurve: Curves.easeInCubic,
-                    child: SizedBox.expand(
-                      key: ValueKey(heroImagePath),
-                      child: Image.asset(
-                        heroImagePath,
-                        fit: BoxFit.cover,
+            child: SizedBox.expand(
+              key: ValueKey(heroImagePath),
+              child: Image.asset(
+                heroImagePath,
+                fit: BoxFit.cover,
                       ),
                     ),
                   ),
@@ -488,7 +534,7 @@ class _DashboardHeroCard extends StatelessWidget {
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.92),
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(22),
                         border: Border.all(
                           color: Colors.white.withValues(alpha: 0.30),
                         ),
@@ -501,9 +547,14 @@ class _DashboardHeroCard extends StatelessWidget {
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                           const SizedBox(height: 6),
-                          Text(
-                            placementHelperText,
-                            style: Theme.of(context).textTheme.bodyMedium,
+                          SizedBox(
+                            height: 40,
+                            child: Text(
+                              placementHelperText,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
                           ),
                           const SizedBox(height: 12),
                           Wrap(
@@ -589,14 +640,18 @@ class _HeroImagePill extends StatelessWidget {
   }
 }
 
-class _HeroStat extends StatelessWidget {
-  const _HeroStat({
+class _HeroInfoTile extends StatelessWidget {
+  const _HeroInfoTile({
     required this.label,
     required this.value,
+    required this.icon,
+    required this.valueColor,
   });
 
   final String label;
   final String value;
+  final IconData icon;
+  final Color valueColor;
 
   @override
   Widget build(BuildContext context) {
@@ -607,12 +662,35 @@ class _HeroStat extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppTheme.border),
       ),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: Theme.of(context).textTheme.bodyMedium),
-          const SizedBox(height: 4),
-          Text(value, style: Theme.of(context).textTheme.titleMedium),
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: valueColor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            alignment: Alignment.center,
+            child: Icon(icon, size: 18, color: valueColor),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: Theme.of(context).textTheme.bodyMedium),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -659,14 +737,14 @@ class _SectionBlock extends StatelessWidget {
 class _DashboardAlertsCard extends StatelessWidget {
   const _DashboardAlertsCard({
     required this.status,
-    required this.explanation,
+    required this.summaryText,
     required this.alertCount,
     required this.latestAlert,
     required this.onOpenAlerts,
   });
 
   final SensorStatus status;
-  final String explanation;
+  final String summaryText;
   final int alertCount;
   final AlertEvent? latestAlert;
   final VoidCallback onOpenAlerts;
@@ -683,8 +761,8 @@ class _DashboardAlertsCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.94),
-        borderRadius: BorderRadius.circular(28),
+        gradient: AppTheme.panelGradient,
+        borderRadius: BorderRadius.circular(30),
         border: Border.all(color: AppTheme.border),
         boxShadow: AppTheme.softShadow,
       ),
@@ -707,16 +785,21 @@ class _DashboardAlertsCard extends StatelessWidget {
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 6),
-          Text(
-            explanation,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.bodyLarge,
+          SizedBox(
+            height: 48,
+            child: Text(
+              summaryText,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
           ),
           const SizedBox(height: 16),
-          _HeroStat(
+          _HeroInfoTile(
             label: 'Recent alerts',
             value: '$alertCount in timeline',
+            icon: Icons.notifications_none_rounded,
+            valueColor: color,
           ),
           if (latestAlert != null) ...[
             const SizedBox(height: 12),
@@ -737,9 +820,14 @@ class _DashboardAlertsCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     latestAlert!.details,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    _formatAlertTime(latestAlert!.timestamp),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppTheme.textSecondary,
+                        ),
                   ),
                 ],
               ),
@@ -757,5 +845,17 @@ class _DashboardAlertsCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _formatAlertTime(DateTime timestamp) {
+    final now = DateTime.now();
+    final difference = now.difference(timestamp);
+    if (difference.inMinutes < 1) {
+      return 'Updated just now';
+    }
+    if (difference.inMinutes < 60) {
+      return 'Updated ${difference.inMinutes} min ago';
+    }
+    return 'Updated ${difference.inHours} hr ago';
   }
 }

@@ -19,7 +19,7 @@ class BrandMark extends StatelessWidget {
             : Theme.of(context).textTheme.headlineSmall)
         ?.copyWith(
       fontWeight: FontWeight.w800,
-      letterSpacing: -0.7,
+      letterSpacing: -0.9,
       color: AppTheme.primaryDeep,
     );
 
@@ -55,7 +55,7 @@ class BrandMark extends StatelessWidget {
                 'Intelligent infant wellness monitoring',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w700,
-                      letterSpacing: 0.1,
+                      letterSpacing: 0.18,
                     ),
               ),
             ],
