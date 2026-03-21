@@ -5,12 +5,14 @@ enum AuthStage { welcome, signIn, register }
 class AppSessionController extends ChangeNotifier {
   AuthStage _stage = AuthStage.welcome;
   bool _isAuthenticated = false;
+  bool _isReviewMode = false;
   String _caregiverName = 'Caregiver';
   String _infantName = 'Baby Neo';
   String _email = 'hello@neolife.ai';
 
   AuthStage get stage => _stage;
   bool get isAuthenticated => _isAuthenticated;
+  bool get isReviewMode => _isReviewMode;
   String get caregiverName => _caregiverName;
   String get infantName => _infantName;
   String get email => _email;
@@ -36,6 +38,7 @@ class AppSessionController extends ChangeNotifier {
     String? infantName,
   }) {
     _isAuthenticated = true;
+    _isReviewMode = false;
     _email = email.trim().isEmpty ? _email : email.trim();
     _caregiverName = _normalizeName(
       caregiverName,
@@ -45,8 +48,23 @@ class AppSessionController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void enterReviewMode({
+    String caregiverName = 'Review Caregiver',
+    String infantName = 'Baby Neo',
+    String email = 'review@neolife.ai',
+  }) {
+    _stage = AuthStage.welcome;
+    _isAuthenticated = true;
+    _isReviewMode = true;
+    _caregiverName = caregiverName;
+    _infantName = infantName;
+    _email = email;
+    notifyListeners();
+  }
+
   void signOut() {
     _isAuthenticated = false;
+    _isReviewMode = false;
     _stage = AuthStage.welcome;
     notifyListeners();
   }

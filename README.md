@@ -54,6 +54,12 @@ test/
 3. Run `flutter pub get`.
 4. Start the app on Chrome or Android.
 
+## Review Mode
+
+- The welcome screen includes an `Enter review mode` action.
+- Review Mode bypasses authentication and opens the full app with mock data.
+- It is intended for temporary design and UX review and can be removed cleanly later.
+
 ## Exact Commands
 
 ```bash
@@ -75,4 +81,21 @@ For Android:
 ```bash
 flutter devices
 flutter run -d <device-id>
+```
+
+## Public Review URL
+
+To run the app on a non-local address and optionally expose a public review URL:
+
+```bash
+cd "/Users/chandadiwakar/Desktop/neolife ai/Neo"
+./tool/run_public_review.sh
+```
+
+- The script binds Flutter web-server to `0.0.0.0` on port `8098`.
+- If `cloudflared` is installed, it also opens a public tunnel and prints a shareable review URL.
+- If `cloudflared` is not installed yet, add it with:
+
+```bash
+brew install cloudflared
 ```

@@ -258,7 +258,7 @@ class _TrendHeroCard extends StatelessWidget {
                       crossAxisCount: 2,
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
-                      childAspectRatio: 1.45,
+                      childAspectRatio: 1.18,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       children: stats,
@@ -389,24 +389,32 @@ class _TrendStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final compact = MediaQuery.sizeOf(context).width < 430;
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(compact ? 10 : 12),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.86),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(compact ? 18 : 20),
         border: Border.all(color: AppTheme.border),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: Theme.of(context).textTheme.bodyMedium),
-          const SizedBox(height: 2),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontSize: compact ? 12 : null,
+                ),
+          ),
+          SizedBox(height: compact ? 1 : 2),
           Text(
             value,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleMedium,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontSize: compact ? 15 : null,
+                ),
           ),
         ],
       ),

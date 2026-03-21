@@ -22,6 +22,7 @@ void main() {
         findsOneWidget);
     expect(find.text('Create account'), findsOneWidget);
     expect(find.text('Sign in'), findsOneWidget);
+    expect(find.text('Enter review mode'), findsOneWidget);
   });
 
   testWidgets('welcome trust actions open real sheets', (tester) async {
@@ -75,6 +76,35 @@ void main() {
     expect(find.text('Key wellness signals'), findsOneWidget);
     expect(find.text('Recommended action'), findsOneWidget);
     expect(find.text('Recent changes'), findsOneWidget);
+  });
+
+  testWidgets('review mode opens dashboard without credentials', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(390, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => AppSessionController()),
+          ChangeNotifierProvider(create: (_) => NeoLifeController()),
+        ],
+        child: const NeoLifeApp(),
+      ),
+    );
+
+    await tester.tap(find.text('Enter review mode'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 700));
+
+    expect(find.text('Key wellness signals'), findsOneWidget);
+    expect(find.byKey(const ValueKey('nav-settings')), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('nav-trends')));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(find.text('Live trends'), findsOneWidget);
   });
 
   testWidgets('sign in flow opens dashboard', (tester) async {

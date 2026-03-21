@@ -29,6 +29,8 @@ class AppHeader extends StatelessWidget {
         return LayoutBuilder(
           builder: (context, constraints) {
             final compact = constraints.maxWidth < 720;
+            final showReviewChip =
+                session.isReviewMode && constraints.maxWidth >= 380;
             final hasMeta = (title != null && title!.isNotEmpty) ||
                 (eyebrow != null && eyebrow!.isNotEmpty) ||
                 (statusLabel != null && statusLabel!.isNotEmpty);
@@ -71,6 +73,14 @@ class AppHeader extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const Expanded(child: _BrandCluster()),
+                      if (showReviewChip) ...[
+                        const _HeaderChip(
+                          label: 'Review',
+                          icon: Icons.visibility_outlined,
+                          dense: true,
+                        ),
+                        SizedBox(width: compact ? 6 : 10),
+                      ],
                       if (shell != null) ...[
                         _UtilityButton(
                           icon: Icons.settings_outlined,
@@ -261,7 +271,7 @@ class _HeaderChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: dense ? 8 : 10, color: AppTheme.secondary),
+          Icon(icon, size: dense ? 12 : 10, color: AppTheme.secondary),
           SizedBox(width: dense ? 6 : 8),
           Text(
             label,

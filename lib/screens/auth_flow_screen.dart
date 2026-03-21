@@ -75,6 +75,7 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> {
                           key: const ValueKey('welcome'),
                           onSignIn: session.showSignIn,
                           onRegister: session.showRegister,
+                          onReviewMode: session.enterReviewMode,
                           onAbout: () => _showAboutSheet(context),
                           onPrivacy: () => _showLegalSheet(context),
                           onSupport: () => _showSupportSheet(context),
@@ -295,6 +296,7 @@ class _WelcomeStage extends StatelessWidget {
     super.key,
     required this.onSignIn,
     required this.onRegister,
+    required this.onReviewMode,
     required this.onAbout,
     required this.onPrivacy,
     required this.onSupport,
@@ -302,6 +304,7 @@ class _WelcomeStage extends StatelessWidget {
 
   final VoidCallback onSignIn;
   final VoidCallback onRegister;
+  final VoidCallback onReviewMode;
   final VoidCallback onAbout;
   final VoidCallback onPrivacy;
   final VoidCallback onSupport;
@@ -322,6 +325,7 @@ class _WelcomeStage extends StatelessWidget {
           final story = _WelcomeCard(
             onSignIn: onSignIn,
             onRegister: onRegister,
+            onReviewMode: onReviewMode,
             onAbout: onAbout,
             onPrivacy: onPrivacy,
             onSupport: onSupport,
@@ -353,6 +357,7 @@ class _WelcomeCard extends StatelessWidget {
   const _WelcomeCard({
     required this.onSignIn,
     required this.onRegister,
+    required this.onReviewMode,
     required this.onAbout,
     required this.onPrivacy,
     required this.onSupport,
@@ -360,6 +365,7 @@ class _WelcomeCard extends StatelessWidget {
 
   final VoidCallback onSignIn;
   final VoidCallback onRegister;
+  final VoidCallback onReviewMode;
   final VoidCallback onAbout;
   final VoidCallback onPrivacy;
   final VoidCallback onSupport;
@@ -456,6 +462,14 @@ class _WelcomeCard extends StatelessWidget {
             },
           ),
           const SizedBox(height: 12),
+          Center(
+            child: TextButton.icon(
+              onPressed: onReviewMode,
+              icon: const Icon(Icons.visibility_outlined, size: 18),
+              label: const Text('Enter review mode'),
+            ),
+          ),
+          const SizedBox(height: 10),
           Wrap(
             spacing: 8,
             runSpacing: 8,
