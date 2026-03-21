@@ -144,7 +144,11 @@ class _NeoBottomBar extends StatelessWidget {
         Icons.bluetooth_searching_rounded,
         Icons.bluetooth_connected_rounded,
       ),
-      _NavItem('Profile', Icons.person_outline_rounded, Icons.person_rounded),
+      _NavItem(
+        'Settings',
+        Icons.settings_outlined,
+        Icons.settings_rounded,
+      ),
     ];
 
     return SafeArea(
@@ -190,6 +194,7 @@ class _NavButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      key: ValueKey('nav-${item.label.toLowerCase()}'),
       onTap: onTap,
       borderRadius: BorderRadius.circular(22),
       child: AnimatedContainer(

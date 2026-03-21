@@ -14,54 +14,64 @@ class BrandMark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final titleStyle = (compact
-            ? Theme.of(context).textTheme.titleLarge
-            : Theme.of(context).textTheme.headlineSmall)
-        ?.copyWith(
-      fontWeight: FontWeight.w800,
-      letterSpacing: -0.9,
-      color: AppTheme.primaryDeep,
-    );
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final narrow = constraints.maxWidth < 250;
+        final titleStyle = (compact || narrow
+                ? Theme.of(context).textTheme.titleMedium
+                : Theme.of(context).textTheme.headlineSmall)
+            ?.copyWith(
+          fontWeight: FontWeight.w800,
+          letterSpacing: -0.9,
+          color: AppTheme.primaryDeep,
+        );
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        BrandSymbol(compact: compact),
-        SizedBox(width: compact ? 10 : 14),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+        return Row(
           children: [
-            RichText(
-              text: TextSpan(
+            BrandSymbol(compact: compact || narrow),
+            SizedBox(width: compact || narrow ? 8 : 14),
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextSpan(
-                    text: 'NeoLife',
-                    style: titleStyle,
-                  ),
-                  TextSpan(
-                    text: ' AI',
-                    style: titleStyle?.copyWith(
-                      color: AppTheme.secondary,
-                      fontWeight: FontWeight.w700,
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'NeoLife',
+                          style: titleStyle,
+                        ),
+                        TextSpan(
+                          text: ' AI',
+                          style: titleStyle?.copyWith(
+                            color: AppTheme.secondary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
+                  if (!compact && showTagline && !narrow) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      'Intelligent infant wellness monitoring',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.18,
+                          ),
+                    ),
+                  ],
                 ],
               ),
             ),
-            if (!compact && showTagline) ...[
-              const SizedBox(height: 4),
-              Text(
-                'Intelligent infant wellness monitoring',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.18,
-                    ),
-              ),
-            ],
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 }

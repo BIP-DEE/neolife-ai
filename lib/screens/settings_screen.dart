@@ -35,216 +35,227 @@ class _SettingsScreenState extends State<SettingsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AppHeader(
-                eyebrow: 'Profile',
-                title: 'Family, preferences, and trust',
+                eyebrow: 'Settings',
+                title: 'Settings and account',
                 subtitle:
-                    'Keep caregiver details, baby profile context, notifications, and privacy settings together in one clear product space.',
+                    'Manage caregiver details, baby profile context, notifications, trust, and account actions in one organized place.',
                 statusLabel: 'Account',
               ),
               const SizedBox(height: 18),
-              _ProfileHeroCard(
-                caregiverName: session.caregiverName,
-                infantName: session.infantName,
-                email: session.email,
-              ),
-              const SizedBox(height: 20),
               LayoutBuilder(
                 builder: (context, constraints) {
-                  final wide = constraints.maxWidth >= 940;
+                  final wide = constraints.maxWidth >= 960;
+                  final profileHero = _ProfileHeroCard(
+                    caregiverName: session.caregiverName,
+                    infantName: session.infantName,
+                    email: session.email,
+                    placementLabel: controller.placementMode.label,
+                  );
+                  final settingsOverview = _SettingsActionsCard(
+                    criticalAlerts: _criticalAlerts,
+                    quietHours: _quietHours,
+                    placementMode: controller.placementMode,
+                    onSignOut: widget.onSignOut,
+                  );
+
+                  final familyProfiles = _SettingsSectionCard(
+                    eyebrow: 'Profiles',
+                    title: 'Caregiver and baby',
+                    child: Column(
+                      children: [
+                        _InfoRow(
+                          title: 'Caregiver name',
+                          subtitle: session.caregiverName,
+                          icon: Icons.person_outline_rounded,
+                        ),
+                        const Divider(height: 28),
+                        _InfoRow(
+                          title: 'Email',
+                          subtitle: session.email,
+                          icon: Icons.alternate_email_rounded,
+                        ),
+                        const Divider(height: 28),
+                        _InfoRow(
+                          title: 'Baby profile',
+                          subtitle: session.infantName,
+                          icon: Icons.child_friendly_rounded,
+                        ),
+                      ],
+                    ),
+                  );
+
+                  final monitoringPreferences = _SettingsSectionCard(
+                    eyebrow: 'Monitoring',
+                    title: 'Monitoring preferences',
+                    child: Column(
+                      children: [
+                        const _InfoRow(
+                          title: 'Placement focus',
+                          subtitle:
+                              'Current signal interpretation follows the selected wearable placement.',
+                          icon: Icons.place_outlined,
+                        ),
+                        const Divider(height: 28),
+                        const _InfoRow(
+                          title: 'Live refresh',
+                          subtitle:
+                              'Signals refresh every second for a calm, near-live overview.',
+                          icon: Icons.timer_outlined,
+                        ),
+                        const Divider(height: 28),
+                        _InfoRow(
+                          title: 'Temperature signal',
+                          subtitle:
+                              '${controller.temperatureTitle} is used across wellness views and alerts.',
+                          icon: Icons.thermostat_outlined,
+                        ),
+                      ],
+                    ),
+                  );
+
+                  final familySharing = _SettingsSectionCard(
+                    eyebrow: 'Family sharing',
+                    title: 'Care team visibility',
+                    child: Column(
+                      children: const [
+                        _InfoRow(
+                          title: 'Shared access',
+                          subtitle:
+                              'Invite a second caregiver so both adults can review the same infant status.',
+                          icon: Icons.group_outlined,
+                        ),
+                        Divider(height: 28),
+                        _InfoRow(
+                          title: 'Support contact',
+                          subtitle:
+                              'Reach the NeoLife team for onboarding, product help, or account questions.',
+                          icon: Icons.support_agent_rounded,
+                        ),
+                      ],
+                    ),
+                  );
+
+                  final notifications = _SettingsSectionCard(
+                    eyebrow: 'Notifications',
+                    title: 'Caregiver alerts',
+                    child: Column(
+                      children: [
+                        SwitchListTile(
+                          value: _criticalAlerts,
+                          onChanged: (value) =>
+                              setState(() => _criticalAlerts = value),
+                          contentPadding: EdgeInsets.zero,
+                          dense: true,
+                          title: const Text('Critical alerts'),
+                          subtitle: const Text(
+                            'Surface only the most important changes immediately.',
+                          ),
+                        ),
+                        SwitchListTile(
+                          value: _dailySummary,
+                          onChanged: (value) =>
+                              setState(() => _dailySummary = value),
+                          contentPadding: EdgeInsets.zero,
+                          dense: true,
+                          title: const Text('Daily summary'),
+                          subtitle: const Text(
+                            'Receive a short wellness recap for the day.',
+                          ),
+                        ),
+                        SwitchListTile(
+                          value: _quietHours,
+                          onChanged: (value) =>
+                              setState(() => _quietHours = value),
+                          contentPadding: EdgeInsets.zero,
+                          dense: true,
+                          title: const Text('Quiet hours'),
+                          subtitle: const Text(
+                            'Reduce non-urgent prompts during preferred rest hours.',
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  final privacyTrust = _SettingsSectionCard(
+                    eyebrow: 'Privacy and trust',
+                    title: 'How NeoLife AI handles care information',
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const BrandMark(compact: true),
+                        const SizedBox(height: 12),
+                        Text(
+                          'NeoLife AI is designed to make infant wellness easier to understand at a glance, with reassuring presentation, careful alerting, and a privacy-first experience.',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        const SizedBox(height: 16),
+                        const _InfoRow(
+                          title: 'Privacy',
+                          subtitle:
+                              'Caregiver and infant details stay on this device in the current product preview.',
+                          icon: Icons.verified_user_outlined,
+                        ),
+                        const SizedBox(height: 12),
+                        const _InfoRow(
+                          title: 'Medical scope',
+                          subtitle:
+                              'NeoLife AI supports wellness visibility and is not a substitute for urgent medical evaluation.',
+                          icon: Icons.health_and_safety_outlined,
+                        ),
+                      ],
+                    ),
+                  );
+
+                  final about = _SettingsSectionCard(
+                    eyebrow: 'About NeoLife AI',
+                    title: 'Product and support',
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        _InfoRow(
+                          title: 'Product experience',
+                          subtitle:
+                              'NeoLife AI brings together live wellness signals, calmer alerts, and clearer caregiver guidance in one connected infant monitoring experience.',
+                          icon: Icons.auto_awesome_outlined,
+                        ),
+                        SizedBox(height: 12),
+                        _InfoRow(
+                          title: 'Support',
+                          subtitle:
+                              'Contact the NeoLife team for onboarding, account support, and trust questions.',
+                          icon: Icons.mark_email_read_outlined,
+                        ),
+                      ],
+                    ),
+                  );
+
                   final leftColumn = Column(
                     children: [
-                      _SettingsSectionCard(
-                        eyebrow: 'Caregiver profile',
-                        title: 'Primary caregiver',
-                        child: Column(
-                          children: [
-                            _InfoRow(
-                              title: 'Caregiver name',
-                              subtitle: session.caregiverName,
-                              icon: Icons.person_outline_rounded,
-                            ),
-                            const Divider(height: 28),
-                            _InfoRow(
-                              title: 'Email',
-                              subtitle: session.email,
-                              icon: Icons.alternate_email_rounded,
-                            ),
-                          ],
-                        ),
-                      ),
+                      familyProfiles,
                       const SizedBox(height: 16),
-                      _SettingsSectionCard(
-                        eyebrow: 'Infant profile',
-                        title: 'Baby profile',
-                        child: Column(
-                          children: [
-                            _InfoRow(
-                              title: 'Profile name',
-                              subtitle: session.infantName,
-                              icon: Icons.child_friendly_rounded,
-                            ),
-                            const Divider(height: 28),
-                            _InfoRow(
-                              title: 'Current placement',
-                              subtitle: controller.placementMode.label,
-                              icon: Icons.place_outlined,
-                            ),
-                          ],
-                        ),
-                      ),
+                      monitoringPreferences,
                       const SizedBox(height: 16),
-                      _SettingsSectionCard(
-                        eyebrow: 'Monitoring preferences',
-                        title: 'Monitoring preferences',
-                        child: Column(
-                          children: [
-                            const _InfoRow(
-                              title: 'Placement focus',
-                              subtitle:
-                                  'Current signal interpretation follows the selected wearable placement.',
-                              icon: Icons.place_outlined,
-                            ),
-                            const Divider(height: 28),
-                            const _InfoRow(
-                              title: 'Live refresh',
-                              subtitle:
-                                  'Signals refresh every second for a calm, near-live overview.',
-                              icon: Icons.timer_outlined,
-                            ),
-                            const Divider(height: 28),
-                            _InfoRow(
-                              title: 'Temperature signal',
-                              subtitle:
-                                  '${controller.temperatureTitle} is used across wellness views and alerts.',
-                              icon: Icons.thermostat_outlined,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      _SettingsSectionCard(
-                        eyebrow: 'Family sharing',
-                        title: 'Care team visibility',
-                        child: Column(
-                          children: const [
-                            _InfoRow(
-                              title: 'Shared access',
-                              subtitle:
-                                  'Invite a second caregiver so both adults can review the same infant status.',
-                              icon: Icons.group_outlined,
-                            ),
-                            Divider(height: 28),
-                            _InfoRow(
-                              title: 'Support contact',
-                              subtitle:
-                                  'Reach the NeoLife team for onboarding, product help, or account questions.',
-                              icon: Icons.support_agent_rounded,
-                            ),
-                          ],
-                        ),
-                      ),
+                      familySharing,
                     ],
                   );
                   final rightColumn = Column(
                     children: [
-                      _SettingsSectionCard(
-                        eyebrow: 'Notifications',
-                        title: 'Caregiver alerts',
-                        child: Column(
-                          children: [
-                            SwitchListTile(
-                              value: _criticalAlerts,
-                              onChanged: (value) =>
-                                  setState(() => _criticalAlerts = value),
-                              title: const Text('Critical alerts'),
-                              subtitle: const Text(
-                                'Surface only the most important changes immediately.',
-                              ),
-                            ),
-                            SwitchListTile(
-                              value: _dailySummary,
-                              onChanged: (value) =>
-                                  setState(() => _dailySummary = value),
-                              title: const Text('Daily summary'),
-                              subtitle: const Text(
-                                'Receive a short wellness recap for the day.',
-                              ),
-                            ),
-                            SwitchListTile(
-                              value: _quietHours,
-                              onChanged: (value) =>
-                                  setState(() => _quietHours = value),
-                              title: const Text('Quiet hours'),
-                              subtitle: const Text(
-                                'Reduce non-urgent prompts during preferred rest hours.',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      notifications,
                       const SizedBox(height: 16),
-                      _SettingsSectionCard(
-                        eyebrow: 'Privacy and trust',
-                        title: 'How NeoLife AI handles care information',
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const BrandMark(compact: true),
-                            const SizedBox(height: 12),
-                            Text(
-                              'NeoLife AI is designed to make infant wellness easier to understand at a glance, with reassuring presentation, careful alerting, and a privacy-first experience.',
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            const SizedBox(height: 16),
-                            const _InfoRow(
-                              title: 'Privacy',
-                              subtitle:
-                                  'Caregiver and infant details stay on this device in the current product preview.',
-                              icon: Icons.verified_user_outlined,
-                            ),
-                            const SizedBox(height: 12),
-                            const _InfoRow(
-                              title: 'Medical scope',
-                              subtitle:
-                                  'NeoLife AI supports wellness visibility and is not a substitute for urgent medical evaluation.',
-                              icon: Icons.health_and_safety_outlined,
-                            ),
-                            const SizedBox(height: 12),
-                            const _InfoRow(
-                              title: 'Support',
-                              subtitle:
-                                  'Contact the NeoLife team for help with onboarding, account support, and trust questions.',
-                              icon: Icons.mark_email_read_outlined,
-                            ),
-                          ],
-                        ),
-                      ),
+                      privacyTrust,
                       const SizedBox(height: 16),
-                      _SettingsSectionCard(
-                        eyebrow: 'About NeoLife AI',
-                        title: 'Product overview',
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'NeoLife AI brings together live wellness signals, calmer alerts, and clearer caregiver guidance in one connected infant monitoring experience.',
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            const SizedBox(height: 16),
-                            OutlinedButton.icon(
-                              onPressed: widget.onSignOut,
-                              icon: const Icon(Icons.logout_rounded, size: 18),
-                              label: const Text('Sign out'),
-                            ),
-                          ],
-                        ),
-                      ),
+                      about,
                     ],
                   );
 
                   if (!wide) {
                     return Column(
                       children: [
+                        profileHero,
+                        const SizedBox(height: 16),
+                        settingsOverview,
+                        const SizedBox(height: 16),
                         leftColumn,
                         const SizedBox(height: 16),
                         rightColumn,
@@ -252,12 +263,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     );
                   }
 
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  return Column(
                     children: [
-                      Expanded(flex: 7, child: leftColumn),
-                      const SizedBox(width: 18),
-                      Expanded(flex: 5, child: rightColumn),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(flex: 7, child: profileHero),
+                          const SizedBox(width: 18),
+                          Expanded(flex: 5, child: settingsOverview),
+                        ],
+                      ),
+                      const SizedBox(height: 18),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(child: leftColumn),
+                          const SizedBox(width: 18),
+                          Expanded(child: rightColumn),
+                        ],
+                      ),
                     ],
                   );
                 },
@@ -275,17 +299,19 @@ class _ProfileHeroCard extends StatelessWidget {
     required this.caregiverName,
     required this.infantName,
     required this.email,
+    required this.placementLabel,
   });
 
   final String caregiverName;
   final String infantName;
   final String email;
+  final String placementLabel;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         gradient: AppTheme.panelGradient,
         borderRadius: BorderRadius.circular(30),
@@ -342,6 +368,22 @@ class _ProfileHeroCard extends StatelessWidget {
               ),
             ],
           );
+          final overview = Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _AccountHighlight(
+                label: 'Baby profile',
+                value: infantName,
+                icon: Icons.child_friendly_rounded,
+              ),
+              const SizedBox(height: 10),
+              _AccountHighlight(
+                label: 'Placement',
+                value: placementLabel,
+                icon: Icons.place_outlined,
+              ),
+            ],
+          );
 
           if (!wide) {
             return Column(
@@ -355,13 +397,100 @@ class _ProfileHeroCard extends StatelessWidget {
           }
 
           return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               avatar,
               const SizedBox(width: 16),
-              Expanded(child: copy),
+              Expanded(flex: 7, child: copy),
+              const SizedBox(width: 16),
+              Expanded(flex: 4, child: overview),
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+class _SettingsActionsCard extends StatelessWidget {
+  const _SettingsActionsCard({
+    required this.criticalAlerts,
+    required this.quietHours,
+    required this.placementMode,
+    required this.onSignOut,
+  });
+
+  final bool criticalAlerts;
+  final bool quietHours;
+  final PlacementMode placementMode;
+  final VoidCallback onSignOut;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        gradient: AppTheme.panelGradient,
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: AppTheme.border),
+        boxShadow: AppTheme.softShadow,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Settings',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppTheme.primary,
+                  fontWeight: FontWeight.w800,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Account actions and quick controls',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Keep the essential account actions and monitoring shortcuts visible here.',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _ProfilePill(
+                label: criticalAlerts
+                    ? 'Critical alerts on'
+                    : 'Critical alerts off',
+                icon: Icons.notifications_active_outlined,
+              ),
+              _ProfilePill(
+                label: quietHours ? 'Quiet hours active' : 'Quiet hours off',
+                icon: Icons.nightlight_outlined,
+              ),
+              _ProfilePill(
+                label: '${placementMode.label} focus',
+                icon: Icons.place_outlined,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          const _InfoRow(
+            title: 'Account support',
+            subtitle:
+                'Use this area for sign-out, trust questions, and caregiver support.',
+            icon: Icons.support_agent_rounded,
+          ),
+          const SizedBox(height: 16),
+          OutlinedButton.icon(
+            onPressed: onSignOut,
+            icon: const Icon(Icons.logout_rounded, size: 18),
+            label: const Text('Sign out'),
+          ),
+        ],
       ),
     );
   }
@@ -382,7 +511,7 @@ class _SettingsSectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         gradient: AppTheme.panelGradient,
         borderRadius: BorderRadius.circular(28),
@@ -426,14 +555,14 @@ class _InfoRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          width: 40,
-          height: 40,
+          width: 36,
+          height: 36,
           decoration: BoxDecoration(
             color: AppTheme.secondarySoft,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(12),
           ),
           alignment: Alignment.center,
-          child: Icon(icon, color: AppTheme.primaryDeep, size: 18),
+          child: Icon(icon, color: AppTheme.primaryDeep, size: 17),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -447,6 +576,67 @@ class _InfoRow extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _AccountHighlight extends StatelessWidget {
+  const _AccountHighlight({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
+
+  final String label;
+  final String value;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.82),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppTheme.border),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: AppTheme.secondarySoft,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            alignment: Alignment.center,
+            child: Icon(icon, size: 17, color: AppTheme.primaryDeep),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.textSecondary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -469,11 +659,12 @@ class _ProfilePill extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
         border: Border.all(color: AppTheme.border),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 4,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           Icon(icon, size: 16, color: AppTheme.primaryDeep),
-          const SizedBox(width: 8),
           Text(
             label,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(

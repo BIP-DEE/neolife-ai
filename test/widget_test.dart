@@ -18,7 +18,7 @@ void main() {
       ),
     );
 
-    expect(find.text('A calmer way to stay close to every shift.'),
+    expect(find.text('A calmer way to stay close to what matters.'),
         findsOneWidget);
     expect(find.text('Create account'), findsOneWidget);
     expect(find.text('Sign in'), findsOneWidget);
@@ -136,7 +136,7 @@ void main() {
     expect(find.text('Recent changes'), findsOneWidget);
   });
 
-  testWidgets('profile screen renders after authentication', (tester) async {
+  testWidgets('settings screen renders after authentication', (tester) async {
     final session = AppSessionController()
       ..completeAuthentication(
         email: 'hello@neolife.ai',
@@ -157,11 +157,56 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 600));
 
-    await tester.tap(find.text('Profile'));
+    await tester.tap(find.text('Settings'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 700));
 
-    expect(find.text('Family, preferences, and trust'), findsOneWidget);
-    expect(find.text('Care team visibility'), findsOneWidget);
+    expect(find.text('Settings and account'), findsOneWidget);
+    expect(find.text('Account actions and quick controls'), findsOneWidget);
+  });
+
+  testWidgets('main navigation reaches each primary screen', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(430, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final session = AppSessionController()
+      ..completeAuthentication(
+        email: 'hello@neolife.ai',
+        caregiverName: 'Chanda',
+        infantName: 'Baby Neo',
+      );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<AppSessionController>.value(value: session),
+          ChangeNotifierProvider(create: (_) => NeoLifeController()),
+        ],
+        child: const NeoLifeApp(),
+      ),
+    );
+
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 700));
+
+    await tester.tap(find.byKey(const ValueKey('nav-trends')));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(find.text('Live trends'), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('nav-alerts')));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(find.text('Alerts and history'), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('nav-device')));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(find.text('Wearable and placement'), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('nav-settings')));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(find.text('Settings and account'), findsOneWidget);
   });
 }

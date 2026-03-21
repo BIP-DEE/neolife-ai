@@ -33,10 +33,10 @@ class AppHeader extends StatelessWidget {
             return Container(
               width: double.infinity,
               padding: EdgeInsets.fromLTRB(
-                compact ? 16 : 22,
-                compact ? 14 : 18,
-                compact ? 16 : 22,
-                compact ? 14 : 18,
+                compact ? 14 : 22,
+                compact ? 12 : 18,
+                compact ? 14 : 22,
+                compact ? 12 : 18,
               ),
               decoration: BoxDecoration(
                 gradient: compact
@@ -65,16 +65,17 @@ class AppHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const Expanded(child: _BrandCluster()),
-                      if (!compact && shell != null) ...[
+                      if (shell != null) ...[
                         _UtilityButton(
                           icon: Icons.settings_outlined,
-                          tooltip: 'Profile & Settings',
+                          tooltip: 'Settings',
+                          compact: compact,
                           onTap: () => shell.goTo(4),
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: compact ? 8 : 10),
                       ],
                       _AvatarMenu(
                         caregiverName: session.caregiverName,
@@ -88,21 +89,23 @@ class AppHeader extends StatelessWidget {
                   if ((title != null && title!.isNotEmpty) ||
                       (eyebrow != null && eyebrow!.isNotEmpty) ||
                       (statusLabel != null && statusLabel!.isNotEmpty)) ...[
-                    SizedBox(height: compact ? 12 : 16),
-                    Container(
-                      width: double.infinity,
-                      height: 1,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            AppTheme.border.withValues(alpha: 0.0),
-                            AppTheme.border,
-                            AppTheme.border.withValues(alpha: 0.0),
-                          ],
+                    SizedBox(height: compact ? 10 : 16),
+                    if (!compact) ...[
+                      Container(
+                        width: double.infinity,
+                        height: 1,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              AppTheme.border.withValues(alpha: 0.0),
+                              AppTheme.border,
+                              AppTheme.border.withValues(alpha: 0.0),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(height: compact ? 12 : 16),
+                      const SizedBox(height: 16),
+                    ],
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
@@ -150,7 +153,7 @@ class AppHeader extends StatelessWidget {
                     ),
                   ],
                   if (title != null && title!.isNotEmpty) ...[
-                    SizedBox(height: compact ? 8 : 10),
+                    SizedBox(height: compact ? 6 : 10),
                     Text(
                       title!,
                       style: (compact
@@ -161,21 +164,19 @@ class AppHeader extends StatelessWidget {
                       ),
                     ),
                   ],
-                  if (subtitle != null && subtitle!.isNotEmpty) ...[
-                    SizedBox(height: compact ? 4 : 6),
+                  if (!compact && subtitle != null && subtitle!.isNotEmpty) ...[
+                    const SizedBox(height: 6),
                     ConstrainedBox(
                       constraints: BoxConstraints(
-                        maxWidth: compact ? constraints.maxWidth : 660,
+                        maxWidth: 660,
                       ),
                       child: Text(
                         subtitle!,
-                        maxLines: compact ? 2 : null,
-                        overflow: compact
-                            ? TextOverflow.ellipsis
-                            : TextOverflow.visible,
+                        maxLines: null,
+                        overflow: TextOverflow.visible,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: AppTheme.textSecondary,
-                              height: compact ? 1.35 : 1.48,
+                              height: 1.48,
                             ),
                       ),
                     ),
@@ -246,11 +247,13 @@ class _UtilityButton extends StatelessWidget {
     required this.icon,
     required this.tooltip,
     required this.onTap,
+    this.compact = false,
   });
 
   final IconData icon;
   final String tooltip;
   final VoidCallback onTap;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -260,8 +263,8 @@ class _UtilityButton extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Container(
-          width: 44,
-          height: 44,
+          width: compact ? 40 : 44,
+          height: compact ? 40 : 44,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
@@ -271,14 +274,14 @@ class _UtilityButton extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(compact ? 16 : 18),
             border: Border.all(color: AppTheme.border),
           ),
           alignment: Alignment.center,
           child: Icon(
             icon,
             color: AppTheme.primaryDeep,
-            size: 20,
+            size: compact ? 18 : 20,
           ),
         ),
       ),
@@ -313,7 +316,7 @@ class _AvatarMenu extends StatelessWidget {
       itemBuilder: (context) => [
         const PopupMenuItem(
           value: _HeaderMenuAction.profile,
-          child: Text('Profile & Settings'),
+          child: Text('Settings'),
         ),
         const PopupMenuItem(
           value: _HeaderMenuAction.logout,

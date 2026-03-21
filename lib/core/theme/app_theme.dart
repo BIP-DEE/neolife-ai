@@ -25,8 +25,8 @@ class AppTheme {
   static List<BoxShadow> get softShadow => [
         const BoxShadow(
           color: shadow,
-          blurRadius: 32,
-          offset: Offset(0, 18),
+          blurRadius: 28,
+          offset: Offset(0, 14),
         ),
         const BoxShadow(
           color: Color(0x08FFFFFF),
@@ -55,10 +55,10 @@ class AppTheme {
 
   static LinearGradient get ambientGradient => const LinearGradient(
         colors: [
-          Color(0xFFF8FBFF),
-          background,
+          Color(0xFFF7FBFF),
+          Color(0xFFF2F7FF),
           backgroundAlt,
-          Color(0xFFF8F5FF),
+          Color(0xFFF8F3FF),
         ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
@@ -66,8 +66,8 @@ class AppTheme {
 
   static LinearGradient get panelGradient => LinearGradient(
         colors: [
-          Colors.white.withValues(alpha: 0.98),
-          surfaceSoft.withValues(alpha: 0.98),
+          Colors.white.withValues(alpha: 0.99),
+          const Color(0xFFF8FBFF).withValues(alpha: 0.98),
         ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
@@ -157,7 +157,8 @@ class AppTheme {
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           elevation: 0,
-          backgroundColor: primaryDeep,
+          backgroundColor: primary,
+          shadowColor: primary.withValues(alpha: 0.18),
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           textStyle: const TextStyle(
@@ -165,7 +166,7 @@ class AppTheme {
             fontWeight: FontWeight.w700,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(18),
           ),
         ),
       ),
@@ -180,7 +181,7 @@ class AppTheme {
             fontWeight: FontWeight.w700,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(18),
           ),
         ),
       ),

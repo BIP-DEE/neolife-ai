@@ -39,6 +39,8 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> {
   Widget build(BuildContext context) {
     return Consumer<AppSessionController>(
       builder: (context, session, _) {
+        final wideBrand = MediaQuery.sizeOf(context).width >= 720;
+
         return Scaffold(
           body: AmbientBackdrop(
             child: SingleChildScrollView(
@@ -46,8 +48,11 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> {
               child: Column(
                 children: [
                   const SizedBox(height: 8),
-                  const BrandMark(showTagline: false),
-                  const SizedBox(height: 24),
+                  BrandMark(
+                    compact: !wideBrand,
+                    showTagline: wideBrand,
+                  ),
+                  SizedBox(height: wideBrand ? 18 : 12),
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 360),
                     switchInCurve: Curves.easeOutCubic,
@@ -248,9 +253,9 @@ class _WelcomeStage extends StatelessWidget {
               ? Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(flex: 7, child: visual),
+                    Expanded(flex: 8, child: visual),
                     const SizedBox(width: 18),
-                    Expanded(flex: 6, child: story),
+                    Expanded(flex: 5, child: story),
                   ],
                 )
               : Column(
@@ -304,7 +309,7 @@ class _WelcomeCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'A calmer way to stay close to every shift.',
+            'A calmer way to stay close to what matters.',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   height: 1.05,
                 ),
@@ -314,49 +319,101 @@ class _WelcomeCard extends StatelessWidget {
             'NeoLife AI brings live wellness signals, temperature trend context, and caregiver-ready guidance into one trusted experience.',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
-          const SizedBox(height: 18),
-          FilledButton.icon(
-            onPressed: onRegister,
-            style:
-                FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
-            icon: const Icon(Icons.person_add_alt_1_rounded, size: 18),
-            label: const Text('Create account'),
-          ),
-          const SizedBox(height: 10),
-          OutlinedButton.icon(
-            onPressed: onSignIn,
-            style: OutlinedButton.styleFrom(
-                minimumSize: const Size.fromHeight(52)),
-            icon: const Icon(Icons.login_rounded, size: 18),
-            label: const Text('Sign in'),
-          ),
           const SizedBox(height: 16),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final compact = constraints.maxWidth < 420;
+              final createButton = FilledButton.icon(
+                onPressed: onRegister,
+                style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(52)),
+                icon: const Icon(Icons.person_add_alt_1_rounded, size: 18),
+                label: const Text('Create account'),
+              );
+              final signInButton = OutlinedButton.icon(
+                onPressed: onSignIn,
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(52),
+                ),
+                icon: const Icon(Icons.login_rounded, size: 18),
+                label: const Text('Sign in'),
+              );
+
+              if (compact) {
+                return Column(
+                  children: [
+                    createButton,
+                    const SizedBox(height: 10),
+                    signInButton,
+                  ],
+                );
+              }
+
+              return Row(
+                children: [
+                  Expanded(child: createButton),
+                  const SizedBox(width: 10),
+                  Expanded(child: signInButton),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 14),
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: const [
               _WelcomeTag(label: 'Live wellness overview'),
               _WelcomeTag(label: 'Temperature trend monitoring'),
-              _WelcomeTag(label: 'Family-ready alerts'),
+              _WelcomeTag(label: 'Caregiver-ready support'),
             ],
           ),
-          const SizedBox(height: 20),
-          const _WelcomeDetail(
-            title: 'Built for calmer nights',
-            body:
-                'See the current status first, then move naturally into trends, alerts, or device fit only when you need more context.',
+          const SizedBox(height: 16),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final compact = constraints.maxWidth < 520;
+              final cards = const [
+                _WelcomeMetric(
+                  icon: Icons.favorite_outline_rounded,
+                  title: 'Live now',
+                  body: 'See the current wellness state first.',
+                ),
+                _WelcomeMetric(
+                  icon: Icons.notifications_active_outlined,
+                  title: 'Trusted alerts',
+                  body: 'Know what changed and what needs review.',
+                ),
+              ];
+
+              if (compact) {
+                return Row(
+                  children: [
+                    Expanded(child: cards[0]),
+                    const SizedBox(width: 10),
+                    Expanded(child: cards[1]),
+                  ],
+                );
+              }
+
+              return Row(
+                children: [
+                  for (var i = 0; i < cards.length; i++) ...[
+                    Expanded(child: cards[i]),
+                    if (i != cards.length - 1) const SizedBox(width: 10),
+                  ],
+                ],
+              );
+            },
           ),
-          const SizedBox(height: 12),
-          const _WelcomeDetail(
-            title: 'Private and reassuring',
-            body:
-                'NeoLife AI is designed around trust, clear communication, and a softer monitoring experience for families.',
-          ),
-          const SizedBox(height: 12),
-          const _WelcomeDetail(
-            title: 'Support when you need it',
-            body:
-                'Product guidance, setup help, and caregiver support are easy to reach throughout the experience.',
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: const [
+              _WelcomeFooterPill(label: 'About NeoLife AI'),
+              _WelcomeFooterPill(label: 'Privacy & Trust'),
+              _WelcomeFooterPill(label: 'Support'),
+            ],
           ),
         ],
       ),
@@ -391,32 +448,71 @@ class _WelcomeTag extends StatelessWidget {
   }
 }
 
-class _WelcomeDetail extends StatelessWidget {
-  const _WelcomeDetail({
+class _WelcomeMetric extends StatelessWidget {
+  const _WelcomeMetric({
+    required this.icon,
     required this.title,
     required this.body,
   });
 
+  final IconData icon;
   final String title;
   final String body;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.76),
+        color: Colors.white.withValues(alpha: 0.78),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppTheme.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: AppTheme.secondarySoft,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            alignment: Alignment.center,
+            child: Icon(icon, size: 18, color: AppTheme.primaryDeep),
+          ),
+          const SizedBox(height: 10),
           Text(title, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 4),
           Text(body, style: Theme.of(context).textTheme.bodyMedium),
         ],
+      ),
+    );
+  }
+}
+
+class _WelcomeFooterPill extends StatelessWidget {
+  const _WelcomeFooterPill({
+    required this.label,
+  });
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.72),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: AppTheme.border),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppTheme.textPrimary,
+              fontWeight: FontWeight.w700,
+            ),
       ),
     );
   }
@@ -494,69 +590,104 @@ class _HeroVisual extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(22),
-        child: AspectRatio(
-          aspectRatio: 1.0,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Image.asset(imagePath, fit: BoxFit.cover),
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      AppTheme.primaryDeep.withValues(alpha: 0.03),
-                      AppTheme.primaryDeep.withValues(alpha: 0.28),
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                ),
-              ),
-              const Positioned(
-                top: 18,
-                left: 18,
-                child: _HeroVisualChip(),
-              ),
-              Positioned(
-                left: 18,
-                right: 18,
-                bottom: 18,
-                child: Container(
-                  padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.78),
-                    borderRadius: BorderRadius.circular(22),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.22),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final compact = constraints.maxWidth < 500;
+
+            return AspectRatio(
+              aspectRatio: compact ? 1.28 : 1.04,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset(imagePath, fit: BoxFit.cover),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppTheme.primaryDeep.withValues(alpha: 0.01),
+                          AppTheme.primaryDeep.withValues(alpha: 0.16),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
                     ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: Theme.of(context).textTheme.titleLarge,
+                  const Positioned(
+                    top: 16,
+                    left: 16,
+                    child: _HeroVisualChip(),
+                  ),
+                  if (!compact)
+                    Positioned(
+                      top: 16,
+                      right: 16,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.18),
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.14),
+                          ),
+                        ),
+                        child: Text(
+                          'Infant wellness',
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                        ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        subtitle,
-                        style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  Positioned(
+                    left: 16,
+                    bottom: 16,
+                    child: Container(
+                      constraints:
+                          BoxConstraints(maxWidth: compact ? 250 : 300),
+                      padding: EdgeInsets.all(compact ? 14 : 18),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.66),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.18),
+                        ),
                       ),
-                      const SizedBox(height: 10),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: const [
-                          _HeroVisualStat(label: 'Private by design'),
-                          _HeroVisualStat(label: 'Caregiver-ready'),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            subtitle,
+                            maxLines: compact ? 2 : 3,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          const SizedBox(height: 10),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: const [
+                              _HeroVisualStat(label: 'Private by design'),
+                              _HeroVisualStat(label: 'Trend-first view'),
+                            ],
+                          ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
@@ -718,6 +849,25 @@ class _AuthFormCardState extends State<_AuthFormCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _FormPill(
+                label: widget.mode == _AuthMode.signIn
+                    ? 'Secure sign in'
+                    : 'Family onboarding',
+                icon: widget.mode == _AuthMode.signIn
+                    ? Icons.lock_outline_rounded
+                    : Icons.child_care_outlined,
+              ),
+              const _FormPill(
+                label: 'Support included',
+                icon: Icons.support_agent_rounded,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
           Text(widget.title, style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 8),
           Text(widget.subtitle, style: Theme.of(context).textTheme.bodyMedium),
@@ -887,6 +1037,11 @@ class _AuthFormCardState extends State<_AuthFormCard> {
               );
             },
           ),
+          const SizedBox(height: 8),
+          Text(
+            'NeoLife AI is built to make infant wellness easier to understand, with calmer alerts and clearer next steps for caregivers.',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
         ],
       ),
     );
@@ -993,6 +1148,42 @@ class _AuthTextField extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _FormPill extends StatelessWidget {
+  const _FormPill({
+    required this.label,
+    required this.icon,
+  });
+
+  final String label;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.78),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: AppTheme.border),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: AppTheme.primaryDeep),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppTheme.textPrimary,
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -53,6 +53,7 @@ class HomeScreen extends StatelessWidget {
                   final hero = _DashboardHeroCard(
                     infantName: session.infantName,
                     status: controller.status,
+                    isConnected: controller.isConnected,
                     statusHeadline: controller.statusHeadline,
                     statusCaption: controller.statusCaption,
                     connectionLabel: controller.connectionLabel,
@@ -63,6 +64,7 @@ class HomeScreen extends StatelessWidget {
                             ? 'assets/images/baby_ankle.jpg'
                             : 'assets/images/baby_chest.jpg',
                     placementHelperText: controller.placementMode.helperText,
+                    onToggleConnection: controller.toggleConnection,
                     onPrimaryAction: () => _showStatusSheet(
                       context: context,
                       status: controller.status,
@@ -178,24 +180,23 @@ class HomeScreen extends StatelessWidget {
 
                   final supportColumn = Column(
                     children: [
-                      _RecommendedActionCard(
-                        status: controller.status,
-                        attentionLabel: controller.attentionLabel,
-                        title: controller.recommendedActionTitle,
-                        detail: controller.recommendedActionDetail,
-                        isConnected: controller.isConnected,
-                        onToggleConnection: controller.toggleConnection,
-                        onOpenTrends: onOpenTrends,
-                        onOpenAlerts: onOpenAlerts,
-                        onOpenDevice: onOpenDevice,
-                      ),
-                      const SizedBox(height: 16),
                       _PlacementQuickCard(
                         selectedMode: controller.placementMode,
                         helperText: controller.placementMode.helperText,
                         qualityLabel: controller.qualityLabel,
                         qualityValue: controller.signalQuality,
                         onChanged: controller.setPlacementMode,
+                        onOpenDevice: onOpenDevice,
+                      ),
+                      const SizedBox(height: 16),
+                      _RecommendedActionCard(
+                        status: controller.status,
+                        attentionLabel: controller.attentionLabel,
+                        title: controller.recommendedActionTitle,
+                        detail: controller.recommendedActionDetail,
+                        isConnected: controller.isConnected,
+                        onOpenTrends: onOpenTrends,
+                        onOpenAlerts: onOpenAlerts,
                         onOpenDevice: onOpenDevice,
                       ),
                     ],
@@ -206,22 +207,6 @@ class HomeScreen extends StatelessWidget {
                       children: [
                         hero,
                         const SizedBox(height: 22),
-                        liveSignals,
-                        const SizedBox(height: 24),
-                        _RecommendedActionCard(
-                          status: controller.status,
-                          attentionLabel: controller.attentionLabel,
-                          title: controller.recommendedActionTitle,
-                          detail: controller.recommendedActionDetail,
-                          isConnected: controller.isConnected,
-                          onToggleConnection: controller.toggleConnection,
-                          onOpenTrends: onOpenTrends,
-                          onOpenAlerts: onOpenAlerts,
-                          onOpenDevice: onOpenDevice,
-                        ),
-                        const SizedBox(height: 24),
-                        recentChanges,
-                        const SizedBox(height: 24),
                         _PlacementQuickCard(
                           selectedMode: controller.placementMode,
                           helperText: controller.placementMode.helperText,
@@ -230,6 +215,21 @@ class HomeScreen extends StatelessWidget {
                           onChanged: controller.setPlacementMode,
                           onOpenDevice: onOpenDevice,
                         ),
+                        const SizedBox(height: 22),
+                        liveSignals,
+                        const SizedBox(height: 24),
+                        _RecommendedActionCard(
+                          status: controller.status,
+                          attentionLabel: controller.attentionLabel,
+                          title: controller.recommendedActionTitle,
+                          detail: controller.recommendedActionDetail,
+                          isConnected: controller.isConnected,
+                          onOpenTrends: onOpenTrends,
+                          onOpenAlerts: onOpenAlerts,
+                          onOpenDevice: onOpenDevice,
+                        ),
+                        const SizedBox(height: 24),
+                        recentChanges,
                       ],
                     );
                   }
@@ -326,6 +326,7 @@ class _DashboardHeroCard extends StatelessWidget {
   const _DashboardHeroCard({
     required this.infantName,
     required this.status,
+    required this.isConnected,
     required this.statusHeadline,
     required this.statusCaption,
     required this.connectionLabel,
@@ -333,11 +334,13 @@ class _DashboardHeroCard extends StatelessWidget {
     required this.placementLabel,
     required this.heroImagePath,
     required this.placementHelperText,
+    required this.onToggleConnection,
     required this.onPrimaryAction,
   });
 
   final String infantName;
   final SensorStatus status;
+  final bool isConnected;
   final String statusHeadline;
   final String statusCaption;
   final String connectionLabel;
@@ -345,6 +348,7 @@ class _DashboardHeroCard extends StatelessWidget {
   final String placementLabel;
   final String heroImagePath;
   final String placementHelperText;
+  final Future<void> Function() onToggleConnection;
   final VoidCallback onPrimaryAction;
 
   @override
@@ -357,7 +361,7 @@ class _DashboardHeroCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         gradient: AppTheme.panelGradient,
         borderRadius: BorderRadius.circular(32),
@@ -366,6 +370,7 @@ class _DashboardHeroCard extends StatelessWidget {
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
+          final compact = constraints.maxWidth < 760;
           final wide = constraints.maxWidth >= 760;
           final copy = Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -403,15 +408,18 @@ class _DashboardHeroCard extends StatelessWidget {
               const SizedBox(height: 12),
               Text(
                 statusHeadline,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      height: 1.08,
-                    ),
+                style: (compact
+                        ? Theme.of(context).textTheme.headlineSmall
+                        : Theme.of(context).textTheme.headlineMedium)
+                    ?.copyWith(
+                  height: 1.08,
+                ),
               ),
               const SizedBox(height: 8),
               ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 540),
                 child: SizedBox(
-                  height: 42,
+                  height: compact ? 38 : 42,
                   child: Text(
                     statusCaption,
                     maxLines: 2,
@@ -421,78 +429,119 @@ class _DashboardHeroCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 14),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  StatusBadge(
-                    label: connectionLabel,
-                    color: AppTheme.secondary,
-                    pulse: false,
-                    icon: Icons.bluetooth_connected_rounded,
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppTheme.secondarySoft.withValues(alpha: 0.85),
+                      Colors.white,
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                  StatusBadge(
-                    label: placementLabel,
-                    color: AppTheme.accent,
-                    pulse: false,
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(color: AppTheme.border),
+                ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final stacked = constraints.maxWidth < 440;
+                    final details = Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Pod connection',
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppTheme.primary,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          isConnected
+                              ? 'Live feed is active now.'
+                              : 'Reconnect to restore live monitoring.',
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppTheme.textPrimary,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                        ),
+                      ],
+                    );
+                    final button = FilledButton.icon(
+                      onPressed: onToggleConnection,
+                      style: FilledButton.styleFrom(
+                        minimumSize: Size(
+                          stacked ? double.infinity : 168,
+                          48,
+                        ),
+                      ),
+                      icon: Icon(
+                        isConnected
+                            ? Icons.bluetooth_disabled_rounded
+                            : Icons.bluetooth_connected_rounded,
+                        size: 18,
+                      ),
+                      label: Text(
+                        isConnected ? 'Disconnect pod' : 'Reconnect pod',
+                      ),
+                    );
+
+                    if (stacked) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          details,
+                          const SizedBox(height: 12),
+                          button,
+                        ],
+                      );
+                    }
+
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(child: details),
+                        const SizedBox(width: 12),
+                        button,
+                      ],
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  _HeroInfoTile(
+                    label: 'Feed',
+                    value: connectionLabel,
+                    icon: Icons.wifi_tethering_rounded,
+                    valueColor: AppTheme.secondary,
+                  ),
+                  _HeroInfoTile(
+                    label: 'Confidence',
+                    value: '${(qualityValue * 100).round()}%',
+                    icon: Icons.shield_outlined,
+                    valueColor: AppTheme.primaryDeep,
+                  ),
+                  _HeroInfoTile(
+                    label: 'Placement',
+                    value: placementLabel,
                     icon: Icons.place_outlined,
+                    valueColor: AppTheme.accent,
                   ),
                 ],
               ),
-              const SizedBox(height: 14),
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final compact = constraints.maxWidth < 520;
-                  final stats = [
-                    _HeroInfoTile(
-                      label: 'Feed',
-                      value: connectionLabel,
-                      icon: Icons.wifi_tethering_rounded,
-                      valueColor: AppTheme.secondary,
-                    ),
-                    _HeroInfoTile(
-                      label: 'Confidence',
-                      value: '${(qualityValue * 100).round()}%',
-                      icon: Icons.shield_outlined,
-                      valueColor: AppTheme.primaryDeep,
-                    ),
-                    _HeroInfoTile(
-                      label: 'Placement',
-                      value: placementLabel,
-                      icon: Icons.place_outlined,
-                      valueColor: AppTheme.accent,
-                    ),
-                  ];
-
-                  if (compact) {
-                    return Column(
-                      children: [
-                        for (var i = 0; i < stats.length; i++) ...[
-                          stats[i],
-                          if (i != stats.length - 1) const SizedBox(height: 10),
-                        ],
-                      ],
-                    );
-                  }
-
-                  return Row(
-                    children: [
-                      for (var i = 0; i < stats.length; i++) ...[
-                        Expanded(child: stats[i]),
-                        if (i != stats.length - 1) const SizedBox(width: 10),
-                      ],
-                    ],
-                  );
-                },
-              ),
-              const SizedBox(height: 14),
-              FilledButton.icon(
+              const SizedBox(height: 6),
+              TextButton.icon(
                 onPressed: onPrimaryAction,
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(48),
-                ),
                 icon: const Icon(Icons.insights_outlined, size: 18),
-                label: const Text('View live details'),
+                label: const Text('More details'),
               ),
             ],
           );
@@ -500,7 +549,7 @@ class _DashboardHeroCard extends StatelessWidget {
           final visual = ClipRRect(
             borderRadius: BorderRadius.circular(24),
             child: AspectRatio(
-              aspectRatio: wide ? 0.98 : 1.42,
+              aspectRatio: wide ? 1.12 : 2.05,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
@@ -518,12 +567,12 @@ class _DashboardHeroCard extends StatelessWidget {
                     ),
                   ),
                   Positioned(
-                    top: 18,
-                    left: 18,
+                    top: 14,
+                    left: 14,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
+                        horizontal: 10,
+                        vertical: 7,
                       ),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.16),
@@ -536,16 +585,16 @@ class _DashboardHeroCard extends StatelessWidget {
                     ),
                   ),
                   Positioned(
-                    left: 18,
-                    right: 18,
-                    bottom: 18,
+                    left: 14,
+                    right: 14,
+                    bottom: 14,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 12,
+                        horizontal: 12,
+                        vertical: 10,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.74),
+                        color: Colors.white.withValues(alpha: 0.66),
                         borderRadius: BorderRadius.circular(18),
                         border: Border.all(
                           color: Colors.white.withValues(alpha: 0.18),
@@ -614,7 +663,6 @@ class _RecommendedActionCard extends StatelessWidget {
     required this.title,
     required this.detail,
     required this.isConnected,
-    required this.onToggleConnection,
     required this.onOpenTrends,
     required this.onOpenAlerts,
     required this.onOpenDevice,
@@ -625,7 +673,6 @@ class _RecommendedActionCard extends StatelessWidget {
   final String title;
   final String detail;
   final bool isConnected;
-  final Future<void> Function() onToggleConnection;
   final VoidCallback onOpenTrends;
   final VoidCallback onOpenAlerts;
   final VoidCallback onOpenDevice;
@@ -639,12 +686,12 @@ class _RecommendedActionCard extends StatelessWidget {
     };
 
     final primaryLabel = !isConnected
-        ? 'Reconnect now'
+        ? 'Open device setup'
         : status == SensorStatus.stable
             ? 'Review trends'
             : 'Open alerts';
     final primaryTap = !isConnected
-        ? () => onToggleConnection()
+        ? onOpenDevice
         : status == SensorStatus.stable
             ? onOpenTrends
             : onOpenAlerts;
@@ -735,7 +782,7 @@ class _RecommendedActionCard extends StatelessWidget {
                 FilledButton.styleFrom(minimumSize: const Size.fromHeight(50)),
             icon: Icon(
               !isConnected
-                  ? Icons.bluetooth_connected_rounded
+                  ? Icons.bluetooth_searching_rounded
                   : status == SensorStatus.stable
                       ? Icons.show_chart_rounded
                       : Icons.notifications_active_outlined,
@@ -776,7 +823,7 @@ class _PlacementQuickCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: AppTheme.panelGradient,
         borderRadius: BorderRadius.circular(30),
@@ -786,24 +833,75 @@ class _PlacementQuickCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Setup and fit',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.primary,
-                  fontWeight: FontWeight.w800,
-                ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final stacked = constraints.maxWidth < 360;
+              final titleBlock = Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Placement mode',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Choose where the pod is worn so labels and signal interpretation stay accurate.',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              );
+              final actions = Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 7,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppTheme.secondarySoft,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      qualityLabel,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppTheme.primaryDeep,
+                            fontWeight: FontWeight.w700,
+                          ),
+                    ),
+                  ),
+                  TextButton.icon(
+                    onPressed: onOpenDevice,
+                    icon: const Icon(Icons.tune_rounded, size: 18),
+                    label: const Text('Device'),
+                  ),
+                ],
+              );
+
+              if (stacked) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    titleBlock,
+                    const SizedBox(height: 10),
+                    actions,
+                  ],
+                );
+              }
+
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: titleBlock),
+                  const SizedBox(width: 12),
+                  actions,
+                ],
+              );
+            },
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Placement mode',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Keep placement visible here, then use Device for the full setup walkthrough.',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
@@ -833,48 +931,44 @@ class _PlacementQuickCard extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
             decoration: BoxDecoration(
               color: AppTheme.surfaceSoft,
               borderRadius: BorderRadius.circular(18),
             ),
             child: Text(
               helperText,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppTheme.textPrimary,
                     fontWeight: FontWeight.w700,
                   ),
             ),
           ),
-          const SizedBox(height: 14),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
+          const SizedBox(height: 10),
+          Row(
             children: [
-              SizedBox(
-                width: 170,
-                child: _MiniStat(
-                  label: 'Signal quality',
-                  value: '${(qualityValue * 100).round()}%',
+              Expanded(
+                child: Text(
+                  'Signal ${(qualityValue * 100).round()}% • ${selectedMode.shortLabel}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.textSecondary,
+                        fontWeight: FontWeight.w700,
+                      ),
                 ),
               ),
-              SizedBox(
-                width: 170,
-                child: _MiniStat(
-                  label: 'Fit note',
-                  value: qualityLabel,
-                ),
+              const SizedBox(width: 12),
+              TextButton(
+                onPressed: onOpenDevice,
+                child: const Text('Open setup'),
               ),
             ],
-          ),
-          const SizedBox(height: 14),
-          TextButton.icon(
-            onPressed: onOpenDevice,
-            icon: const Icon(Icons.arrow_forward_rounded, size: 18),
-            label: const Text('Open device setup'),
           ),
         ],
       ),
@@ -1180,73 +1274,34 @@ class _HeroInfoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.82),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(999),
         border: Border.all(color: AppTheme.border),
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 26,
+            height: 26,
             decoration: BoxDecoration(
               color: valueColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(9),
             ),
             alignment: Alignment.center,
-            child: Icon(icon, size: 18, color: valueColor),
+            child: Icon(icon, size: 14, color: valueColor),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(label, style: Theme.of(context).textTheme.bodyMedium),
-                const SizedBox(height: 4),
-                Text(
-                  value,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MiniStat extends StatelessWidget {
-  const _MiniStat({
-    required this.label,
-    required this.value,
-  });
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppTheme.surfaceSoft,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: Theme.of(context).textTheme.bodyMedium),
-          const SizedBox(height: 4),
+          const SizedBox(width: 8),
           Text(
-            value,
+            '$label: $value',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleMedium,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppTheme.textPrimary,
+                  fontWeight: FontWeight.w800,
+                ),
           ),
         ],
       ),
