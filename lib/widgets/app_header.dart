@@ -29,34 +29,37 @@ class AppHeader extends StatelessWidget {
         return LayoutBuilder(
           builder: (context, constraints) {
             final compact = constraints.maxWidth < 720;
+            final hasMeta = (title != null && title!.isNotEmpty) ||
+                (eyebrow != null && eyebrow!.isNotEmpty) ||
+                (statusLabel != null && statusLabel!.isNotEmpty);
 
             return Container(
               width: double.infinity,
               padding: EdgeInsets.fromLTRB(
-                compact ? 14 : 22,
-                compact ? 12 : 18,
-                compact ? 14 : 22,
-                compact ? 12 : 18,
+                compact ? 12 : 22,
+                compact ? 10 : 18,
+                compact ? 12 : 22,
+                compact ? 10 : 18,
               ),
               decoration: BoxDecoration(
                 gradient: compact
                     ? LinearGradient(
                         colors: [
-                          Colors.white.withValues(alpha: 0.98),
+                          Colors.white.withValues(alpha: 0.99),
                           AppTheme.backgroundAlt,
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                       )
                     : AppTheme.panelGradient,
-                borderRadius: BorderRadius.circular(compact ? 24 : 30),
+                borderRadius: BorderRadius.circular(compact ? 20 : 30),
                 border: Border.all(color: AppTheme.border),
                 boxShadow: compact
                     ? [
                         BoxShadow(
-                          color: AppTheme.shadow.withValues(alpha: 0.55),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
+                          color: AppTheme.shadow.withValues(alpha: 0.42),
+                          blurRadius: 16,
+                          offset: const Offset(0, 8),
                         ),
                       ]
                     : AppTheme.softShadow,
@@ -86,11 +89,57 @@ class AppHeader extends StatelessWidget {
                       ),
                     ],
                   ),
-                  if ((title != null && title!.isNotEmpty) ||
-                      (eyebrow != null && eyebrow!.isNotEmpty) ||
-                      (statusLabel != null && statusLabel!.isNotEmpty)) ...[
-                    SizedBox(height: compact ? 10 : 16),
-                    if (!compact) ...[
+                  if (hasMeta) ...[
+                    SizedBox(height: compact ? 8 : 16),
+                    if (compact)
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (eyebrow != null && eyebrow!.isNotEmpty)
+                                  Text(
+                                    eyebrow!,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: AppTheme.primary,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                  ),
+                                if (title != null && title!.isNotEmpty) ...[
+                                  if (eyebrow != null && eyebrow!.isNotEmpty)
+                                    const SizedBox(height: 2),
+                                  Text(
+                                    title!,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(
+                                          color: AppTheme.textPrimary,
+                                        ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                          if (statusLabel != null &&
+                              statusLabel!.isNotEmpty) ...[
+                            const SizedBox(width: 10),
+                            _HeaderChip(
+                              label: statusLabel!,
+                              icon: Icons.circle,
+                              dense: true,
+                            ),
+                          ],
+                        ],
+                      )
+                    else ...[
                       Container(
                         width: double.infinity,
                         height: 1,
@@ -105,63 +154,49 @@ class AppHeader extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          if (eyebrow != null && eyebrow!.isNotEmpty)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppTheme.secondarySoft,
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: Text(
+                                eyebrow!,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      color: AppTheme.primaryDeep,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                              ),
+                            ),
+                          if (statusLabel != null && statusLabel!.isNotEmpty)
+                            _HeaderChip(
+                              label: statusLabel!,
+                              icon: Icons.circle,
+                            ),
+                        ],
+                      ),
                     ],
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        if (eyebrow != null && eyebrow!.isNotEmpty)
-                          compact
-                              ? Text(
-                                  eyebrow!,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.copyWith(
-                                        color: AppTheme.primary,
-                                        fontWeight: FontWeight.w800,
-                                      ),
-                                )
-                              : Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 8,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.secondarySoft,
-                                    borderRadius: BorderRadius.circular(999),
-                                  ),
-                                  child: Text(
-                                    eyebrow!,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          color: AppTheme.primaryDeep,
-                                          fontWeight: FontWeight.w800,
-                                        ),
-                                  ),
-                                ),
-                        if (statusLabel != null && statusLabel!.isNotEmpty)
-                          _HeaderChip(
-                            label: statusLabel!,
-                            icon: Icons.circle,
-                            dense: compact,
-                          ),
-                      ],
-                    ),
                   ],
-                  if (title != null && title!.isNotEmpty) ...[
-                    SizedBox(height: compact ? 6 : 10),
+                  if (!compact && title != null && title!.isNotEmpty) ...[
+                    const SizedBox(height: 10),
                     Text(
                       title!,
-                      style: (compact
-                              ? Theme.of(context).textTheme.headlineSmall
-                              : Theme.of(context).textTheme.headlineMedium)
-                          ?.copyWith(
-                        color: AppTheme.textPrimary,
-                      ),
+                      style:
+                          Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                color: AppTheme.textPrimary,
+                              ),
                     ),
                   ],
                   if (!compact && subtitle != null && subtitle!.isNotEmpty) ...[
@@ -263,8 +298,8 @@ class _UtilityButton extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Container(
-          width: compact ? 40 : 44,
-          height: compact ? 40 : 44,
+          width: compact ? 38 : 44,
+          height: compact ? 38 : 44,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
@@ -274,14 +309,14 @@ class _UtilityButton extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(compact ? 16 : 18),
+            borderRadius: BorderRadius.circular(compact ? 14 : 18),
             border: Border.all(color: AppTheme.border),
           ),
           alignment: Alignment.center,
           child: Icon(
             icon,
             color: AppTheme.primaryDeep,
-            size: compact ? 18 : 20,
+            size: compact ? 17 : 20,
           ),
         ),
       ),
@@ -324,8 +359,8 @@ class _AvatarMenu extends StatelessWidget {
         ),
       ],
       child: Container(
-        height: compact ? 40 : 44,
-        padding: EdgeInsets.symmetric(horizontal: compact ? 8 : 10),
+        height: compact ? 38 : 44,
+        padding: EdgeInsets.symmetric(horizontal: compact ? 7 : 10),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
@@ -335,7 +370,7 @@ class _AvatarMenu extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(compact ? 16 : 20),
           border: Border.all(color: AppTheme.border),
         ),
         child: Row(

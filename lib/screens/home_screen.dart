@@ -180,15 +180,6 @@ class HomeScreen extends StatelessWidget {
 
                   final supportColumn = Column(
                     children: [
-                      _PlacementQuickCard(
-                        selectedMode: controller.placementMode,
-                        helperText: controller.placementMode.helperText,
-                        qualityLabel: controller.qualityLabel,
-                        qualityValue: controller.signalQuality,
-                        onChanged: controller.setPlacementMode,
-                        onOpenDevice: onOpenDevice,
-                      ),
-                      const SizedBox(height: 16),
                       _RecommendedActionCard(
                         status: controller.status,
                         attentionLabel: controller.attentionLabel,
@@ -199,6 +190,15 @@ class HomeScreen extends StatelessWidget {
                         onOpenAlerts: onOpenAlerts,
                         onOpenDevice: onOpenDevice,
                       ),
+                      const SizedBox(height: 16),
+                      _PlacementQuickCard(
+                        selectedMode: controller.placementMode,
+                        helperText: controller.placementMode.helperText,
+                        qualityLabel: controller.qualityLabel,
+                        qualityValue: controller.signalQuality,
+                        onChanged: controller.setPlacementMode,
+                        onOpenDevice: onOpenDevice,
+                      ),
                     ],
                   );
 
@@ -206,18 +206,9 @@ class HomeScreen extends StatelessWidget {
                     return Column(
                       children: [
                         hero,
-                        const SizedBox(height: 22),
-                        _PlacementQuickCard(
-                          selectedMode: controller.placementMode,
-                          helperText: controller.placementMode.helperText,
-                          qualityLabel: controller.qualityLabel,
-                          qualityValue: controller.signalQuality,
-                          onChanged: controller.setPlacementMode,
-                          onOpenDevice: onOpenDevice,
-                        ),
-                        const SizedBox(height: 22),
+                        const SizedBox(height: 18),
                         liveSignals,
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 20),
                         _RecommendedActionCard(
                           status: controller.status,
                           attentionLabel: controller.attentionLabel,
@@ -228,7 +219,16 @@ class HomeScreen extends StatelessWidget {
                           onOpenAlerts: onOpenAlerts,
                           onOpenDevice: onOpenDevice,
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 18),
+                        _PlacementQuickCard(
+                          selectedMode: controller.placementMode,
+                          helperText: controller.placementMode.helperText,
+                          qualityLabel: controller.qualityLabel,
+                          qualityValue: controller.signalQuality,
+                          onChanged: controller.setPlacementMode,
+                          onOpenDevice: onOpenDevice,
+                        ),
+                        const SizedBox(height: 20),
                         recentChanges,
                       ],
                     );
@@ -361,10 +361,12 @@ class _DashboardHeroCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      padding: AppTheme.panelPadding(context, phone: 16, regular: 18),
       decoration: BoxDecoration(
         gradient: AppTheme.panelGradient,
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(
+          AppTheme.panelRadius(context, phone: 26, regular: 32),
+        ),
         border: Border.all(color: AppTheme.border),
         boxShadow: AppTheme.softShadow,
       ),
@@ -409,7 +411,7 @@ class _DashboardHeroCard extends StatelessWidget {
               Text(
                 statusHeadline,
                 style: (compact
-                        ? Theme.of(context).textTheme.headlineSmall
+                        ? Theme.of(context).textTheme.titleLarge
                         : Theme.of(context).textTheme.headlineMedium)
                     ?.copyWith(
                   height: 1.08,
@@ -419,7 +421,7 @@ class _DashboardHeroCard extends StatelessWidget {
               ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 540),
                 child: SizedBox(
-                  height: compact ? 38 : 42,
+                  height: compact ? 34 : 42,
                   child: Text(
                     statusCaption,
                     maxLines: 2,
@@ -461,8 +463,8 @@ class _DashboardHeroCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           isConnected
-                              ? 'Live feed is active now.'
-                              : 'Reconnect to restore live monitoring.',
+                              ? 'Pod connected and updating live.'
+                              : 'Pod disconnected. Reconnect to restore live monitoring.',
                           style:
                               Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: AppTheme.textPrimary,
@@ -476,7 +478,7 @@ class _DashboardHeroCard extends StatelessWidget {
                       style: FilledButton.styleFrom(
                         minimumSize: Size(
                           stacked ? double.infinity : 168,
-                          48,
+                          compact ? 44 : 48,
                         ),
                       ),
                       icon: Icon(
@@ -514,8 +516,8 @@ class _DashboardHeroCard extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Wrap(
-                spacing: 10,
-                runSpacing: 10,
+                spacing: 8,
+                runSpacing: 8,
                 children: [
                   _HeroInfoTile(
                     label: 'Feed',
@@ -632,14 +634,7 @@ class _DashboardHeroCard extends StatelessWidget {
           );
 
           if (!wide) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                copy,
-                const SizedBox(height: 16),
-                visual,
-              ],
-            );
+            return copy;
           }
 
           return Row(
@@ -679,6 +674,7 @@ class _RecommendedActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final compact = AppTheme.isPhone(context);
     final color = switch (status) {
       SensorStatus.stable => AppTheme.stable,
       SensorStatus.unusual => AppTheme.warning,
@@ -698,7 +694,7 @@ class _RecommendedActionCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: AppTheme.panelPadding(context, phone: 16, regular: 20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -708,7 +704,9 @@ class _RecommendedActionCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(
+          AppTheme.panelRadius(context, phone: 24, regular: 30),
+        ),
         border: Border.all(color: AppTheme.border),
         boxShadow: AppTheme.softShadow,
       ),
@@ -726,7 +724,7 @@ class _RecommendedActionCard extends StatelessWidget {
           Text(title, style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 8),
           SizedBox(
-            height: 44,
+            height: compact ? 40 : 44,
             child: Text(
               detail,
               maxLines: 2,
@@ -737,7 +735,10 @@ class _RecommendedActionCard extends StatelessWidget {
           const SizedBox(height: 14),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            padding: EdgeInsets.symmetric(
+              horizontal: compact ? 12 : 14,
+              vertical: compact ? 10 : 12,
+            ),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.78),
               borderRadius: BorderRadius.circular(20),
@@ -746,8 +747,8 @@ class _RecommendedActionCard extends StatelessWidget {
             child: Row(
               children: [
                 Container(
-                  width: 38,
-                  height: 38,
+                  width: compact ? 34 : 38,
+                  height: compact ? 34 : 38,
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(14),
@@ -779,7 +780,7 @@ class _RecommendedActionCard extends StatelessWidget {
           FilledButton.icon(
             onPressed: primaryTap,
             style:
-                FilledButton.styleFrom(minimumSize: const Size.fromHeight(50)),
+                FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
             icon: Icon(
               !isConnected
                   ? Icons.bluetooth_searching_rounded
@@ -821,12 +822,15 @@ class _PlacementQuickCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final compact = AppTheme.isPhone(context);
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: AppTheme.panelPadding(context, phone: 14, regular: 16),
       decoration: BoxDecoration(
         gradient: AppTheme.panelGradient,
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(
+          AppTheme.panelRadius(context, phone: 24, regular: 30),
+        ),
         border: Border.all(color: AppTheme.border),
         boxShadow: AppTheme.softShadow,
       ),
@@ -841,11 +845,13 @@ class _PlacementQuickCard extends StatelessWidget {
                 children: [
                   Text(
                     'Placement mode',
-                    style: Theme.of(context).textTheme.titleLarge,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontSize: compact ? 16 : null,
+                        ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Choose where the pod is worn so labels and signal interpretation stay accurate.',
+                    'Choose where the pod is worn.',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ],
@@ -901,7 +907,7 @@ class _PlacementQuickCard extends StatelessWidget {
               );
             },
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
@@ -931,44 +937,71 @@ class _PlacementQuickCard extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 12),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-            decoration: BoxDecoration(
-              color: AppTheme.surfaceSoft,
-              borderRadius: BorderRadius.circular(18),
-            ),
-            child: Text(
-              helperText,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.textPrimary,
-                    fontWeight: FontWeight.w700,
-                  ),
-            ),
-          ),
           const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final stacked = constraints.maxWidth < 360;
+              final helper = Expanded(
                 child: Text(
-                  'Signal ${(qualityValue * 100).round()}% • ${selectedMode.shortLabel}',
-                  maxLines: 1,
+                  helperText,
+                  maxLines: stacked ? 2 : 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: AppTheme.textSecondary,
                         fontWeight: FontWeight.w700,
                       ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              TextButton(
-                onPressed: onOpenDevice,
-                child: const Text('Open setup'),
-              ),
-            ],
+              );
+              final meta = Text(
+                'Signal ${(qualityValue * 100).round()}%',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppTheme.textPrimary,
+                      fontWeight: FontWeight.w800,
+                    ),
+              );
+
+              if (stacked) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    meta,
+                    const SizedBox(height: 6),
+                    Text(
+                      helperText,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppTheme.textSecondary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                    ),
+                    const SizedBox(height: 4),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: TextButton(
+                        onPressed: onOpenDevice,
+                        child: const Text('Open setup'),
+                      ),
+                    ),
+                  ],
+                );
+              }
+
+              return Row(
+                children: [
+                  helper,
+                  const SizedBox(width: 12),
+                  meta,
+                  const SizedBox(width: 12),
+                  TextButton(
+                    onPressed: onOpenDevice,
+                    child: const Text('Open setup'),
+                  ),
+                ],
+              );
+            },
           ),
         ],
       ),

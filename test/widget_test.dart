@@ -24,6 +24,33 @@ void main() {
     expect(find.text('Sign in'), findsOneWidget);
   });
 
+  testWidgets('welcome trust actions open real sheets', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(430, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => AppSessionController()),
+          ChangeNotifierProvider(create: (_) => NeoLifeController()),
+        ],
+        child: const NeoLifeApp(),
+      ),
+    );
+
+    await tester.ensureVisible(find.text('About'));
+    await tester.tap(find.text('About'));
+    await tester.pumpAndSettle();
+    expect(find.text('About NeoLife AI'), findsOneWidget);
+
+    Navigator.of(tester.element(find.text('About NeoLife AI'))).pop();
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Privacy'));
+    await tester.pumpAndSettle();
+    expect(find.text('Privacy & trust'), findsOneWidget);
+  });
+
   testWidgets('renders dashboard after authentication', (tester) async {
     final session = AppSessionController()
       ..completeAuthentication(

@@ -125,7 +125,7 @@ class DeviceScreen extends StatelessWidget {
               ),
               const SizedBox(height: 14),
               const ProductShowcaseCard(
-                eyebrow: 'Hardware preview',
+                eyebrow: 'Hardware view',
                 title: 'Sensor pod detail',
                 description:
                     'A calmer hardware view supports product trust without competing with the setup workflow.',

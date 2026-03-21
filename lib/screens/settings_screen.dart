@@ -58,176 +58,188 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     onSignOut: widget.onSignOut,
                   );
 
+                  final familyProfilesContent = Column(
+                    children: [
+                      _InfoRow(
+                        title: 'Caregiver name',
+                        subtitle: session.caregiverName,
+                        icon: Icons.person_outline_rounded,
+                      ),
+                      const Divider(height: 28),
+                      _InfoRow(
+                        title: 'Email',
+                        subtitle: session.email,
+                        icon: Icons.alternate_email_rounded,
+                      ),
+                      const Divider(height: 28),
+                      _InfoRow(
+                        title: 'Baby profile',
+                        subtitle: session.infantName,
+                        icon: Icons.child_friendly_rounded,
+                      ),
+                    ],
+                  );
+
+                  final monitoringPreferencesContent = Column(
+                    children: [
+                      const _InfoRow(
+                        title: 'Placement focus',
+                        subtitle:
+                            'Current signal interpretation follows the selected wearable placement.',
+                        icon: Icons.place_outlined,
+                      ),
+                      const Divider(height: 28),
+                      const _InfoRow(
+                        title: 'Live refresh',
+                        subtitle:
+                            'Signals refresh every second for a calm, near-live overview.',
+                        icon: Icons.timer_outlined,
+                      ),
+                      const Divider(height: 28),
+                      _InfoRow(
+                        title: 'Temperature signal',
+                        subtitle:
+                            '${controller.temperatureTitle} is used across wellness views and alerts.',
+                        icon: Icons.thermostat_outlined,
+                      ),
+                    ],
+                  );
+
+                  final familySharingContent = Column(
+                    children: const [
+                      _InfoRow(
+                        title: 'Shared access',
+                        subtitle:
+                            'Invite a second caregiver so both adults can review the same infant status.',
+                        icon: Icons.group_outlined,
+                      ),
+                      Divider(height: 28),
+                      _InfoRow(
+                        title: 'Support contact',
+                        subtitle:
+                            'Reach the NeoLife team for onboarding, product help, or account questions.',
+                        icon: Icons.support_agent_rounded,
+                      ),
+                    ],
+                  );
+
+                  final notificationsContent = Column(
+                    children: [
+                      SwitchListTile(
+                        value: _criticalAlerts,
+                        onChanged: (value) =>
+                            setState(() => _criticalAlerts = value),
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                        title: const Text('Critical alerts'),
+                        subtitle: const Text(
+                          'Surface only the most important changes immediately.',
+                        ),
+                      ),
+                      SwitchListTile(
+                        value: _dailySummary,
+                        onChanged: (value) =>
+                            setState(() => _dailySummary = value),
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                        title: const Text('Daily summary'),
+                        subtitle: const Text(
+                          'Receive a short wellness recap for the day.',
+                        ),
+                      ),
+                      SwitchListTile(
+                        value: _quietHours,
+                        onChanged: (value) =>
+                            setState(() => _quietHours = value),
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                        title: const Text('Quiet hours'),
+                        subtitle: const Text(
+                          'Reduce non-urgent prompts during preferred rest hours.',
+                        ),
+                      ),
+                    ],
+                  );
+
+                  final privacyTrustContent = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const BrandMark(compact: true),
+                      const SizedBox(height: 12),
+                      Text(
+                        'NeoLife AI is designed to make infant wellness easier to understand at a glance, with reassuring presentation, careful alerting, and a privacy-first experience.',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      const SizedBox(height: 16),
+                      const _InfoRow(
+                        title: 'Privacy',
+                        subtitle:
+                            'Caregiver and infant details stay protected on this device with clear account controls and trust-first design.',
+                        icon: Icons.verified_user_outlined,
+                      ),
+                      const SizedBox(height: 12),
+                      const _InfoRow(
+                        title: 'Medical scope',
+                        subtitle:
+                            'NeoLife AI supports wellness visibility and is not a substitute for urgent medical evaluation.',
+                        icon: Icons.health_and_safety_outlined,
+                      ),
+                    ],
+                  );
+
+                  final aboutContent = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      _InfoRow(
+                        title: 'Product experience',
+                        subtitle:
+                            'NeoLife AI brings together live wellness signals, calmer alerts, and clearer caregiver guidance in one connected infant monitoring experience.',
+                        icon: Icons.auto_awesome_outlined,
+                      ),
+                      SizedBox(height: 12),
+                      _InfoRow(
+                        title: 'Support',
+                        subtitle:
+                            'Contact the NeoLife team for onboarding, account support, and trust questions.',
+                        icon: Icons.mark_email_read_outlined,
+                      ),
+                    ],
+                  );
+
                   final familyProfiles = _SettingsSectionCard(
                     eyebrow: 'Profiles',
                     title: 'Caregiver and baby',
-                    child: Column(
-                      children: [
-                        _InfoRow(
-                          title: 'Caregiver name',
-                          subtitle: session.caregiverName,
-                          icon: Icons.person_outline_rounded,
-                        ),
-                        const Divider(height: 28),
-                        _InfoRow(
-                          title: 'Email',
-                          subtitle: session.email,
-                          icon: Icons.alternate_email_rounded,
-                        ),
-                        const Divider(height: 28),
-                        _InfoRow(
-                          title: 'Baby profile',
-                          subtitle: session.infantName,
-                          icon: Icons.child_friendly_rounded,
-                        ),
-                      ],
-                    ),
+                    child: familyProfilesContent,
                   );
 
                   final monitoringPreferences = _SettingsSectionCard(
                     eyebrow: 'Monitoring',
                     title: 'Monitoring preferences',
-                    child: Column(
-                      children: [
-                        const _InfoRow(
-                          title: 'Placement focus',
-                          subtitle:
-                              'Current signal interpretation follows the selected wearable placement.',
-                          icon: Icons.place_outlined,
-                        ),
-                        const Divider(height: 28),
-                        const _InfoRow(
-                          title: 'Live refresh',
-                          subtitle:
-                              'Signals refresh every second for a calm, near-live overview.',
-                          icon: Icons.timer_outlined,
-                        ),
-                        const Divider(height: 28),
-                        _InfoRow(
-                          title: 'Temperature signal',
-                          subtitle:
-                              '${controller.temperatureTitle} is used across wellness views and alerts.',
-                          icon: Icons.thermostat_outlined,
-                        ),
-                      ],
-                    ),
+                    child: monitoringPreferencesContent,
                   );
 
                   final familySharing = _SettingsSectionCard(
                     eyebrow: 'Family sharing',
                     title: 'Care team visibility',
-                    child: Column(
-                      children: const [
-                        _InfoRow(
-                          title: 'Shared access',
-                          subtitle:
-                              'Invite a second caregiver so both adults can review the same infant status.',
-                          icon: Icons.group_outlined,
-                        ),
-                        Divider(height: 28),
-                        _InfoRow(
-                          title: 'Support contact',
-                          subtitle:
-                              'Reach the NeoLife team for onboarding, product help, or account questions.',
-                          icon: Icons.support_agent_rounded,
-                        ),
-                      ],
-                    ),
+                    child: familySharingContent,
                   );
 
                   final notifications = _SettingsSectionCard(
                     eyebrow: 'Notifications',
                     title: 'Caregiver alerts',
-                    child: Column(
-                      children: [
-                        SwitchListTile(
-                          value: _criticalAlerts,
-                          onChanged: (value) =>
-                              setState(() => _criticalAlerts = value),
-                          contentPadding: EdgeInsets.zero,
-                          dense: true,
-                          title: const Text('Critical alerts'),
-                          subtitle: const Text(
-                            'Surface only the most important changes immediately.',
-                          ),
-                        ),
-                        SwitchListTile(
-                          value: _dailySummary,
-                          onChanged: (value) =>
-                              setState(() => _dailySummary = value),
-                          contentPadding: EdgeInsets.zero,
-                          dense: true,
-                          title: const Text('Daily summary'),
-                          subtitle: const Text(
-                            'Receive a short wellness recap for the day.',
-                          ),
-                        ),
-                        SwitchListTile(
-                          value: _quietHours,
-                          onChanged: (value) =>
-                              setState(() => _quietHours = value),
-                          contentPadding: EdgeInsets.zero,
-                          dense: true,
-                          title: const Text('Quiet hours'),
-                          subtitle: const Text(
-                            'Reduce non-urgent prompts during preferred rest hours.',
-                          ),
-                        ),
-                      ],
-                    ),
+                    child: notificationsContent,
                   );
 
                   final privacyTrust = _SettingsSectionCard(
                     eyebrow: 'Privacy and trust',
                     title: 'How NeoLife AI handles care information',
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const BrandMark(compact: true),
-                        const SizedBox(height: 12),
-                        Text(
-                          'NeoLife AI is designed to make infant wellness easier to understand at a glance, with reassuring presentation, careful alerting, and a privacy-first experience.',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        const SizedBox(height: 16),
-                        const _InfoRow(
-                          title: 'Privacy',
-                          subtitle:
-                              'Caregiver and infant details stay on this device in the current product preview.',
-                          icon: Icons.verified_user_outlined,
-                        ),
-                        const SizedBox(height: 12),
-                        const _InfoRow(
-                          title: 'Medical scope',
-                          subtitle:
-                              'NeoLife AI supports wellness visibility and is not a substitute for urgent medical evaluation.',
-                          icon: Icons.health_and_safety_outlined,
-                        ),
-                      ],
-                    ),
+                    child: privacyTrustContent,
                   );
 
                   final about = _SettingsSectionCard(
                     eyebrow: 'About NeoLife AI',
                     title: 'Product and support',
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        _InfoRow(
-                          title: 'Product experience',
-                          subtitle:
-                              'NeoLife AI brings together live wellness signals, calmer alerts, and clearer caregiver guidance in one connected infant monitoring experience.',
-                          icon: Icons.auto_awesome_outlined,
-                        ),
-                        SizedBox(height: 12),
-                        _InfoRow(
-                          title: 'Support',
-                          subtitle:
-                              'Contact the NeoLife team for onboarding, account support, and trust questions.',
-                          icon: Icons.mark_email_read_outlined,
-                        ),
-                      ],
-                    ),
+                    child: aboutContent,
                   );
 
                   final leftColumn = Column(
@@ -250,15 +262,66 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   );
 
                   if (!wide) {
+                    final mobileSections = Column(
+                      children: [
+                        _SettingsDisclosureCard(
+                          eyebrow: 'Profiles',
+                          title: 'Caregiver and baby',
+                          summary:
+                              'Review caregiver details, email, and the active baby profile.',
+                          initiallyExpanded: true,
+                          child: familyProfilesContent,
+                        ),
+                        const SizedBox(height: 12),
+                        _SettingsDisclosureCard(
+                          eyebrow: 'Notifications',
+                          title: 'Caregiver alerts',
+                          summary:
+                              'Control critical alerts, daily summaries, and quiet hours.',
+                          child: notificationsContent,
+                        ),
+                        const SizedBox(height: 12),
+                        _SettingsDisclosureCard(
+                          eyebrow: 'Monitoring',
+                          title: 'Monitoring preferences',
+                          summary:
+                              'Review placement focus, live refresh, and temperature context.',
+                          child: monitoringPreferencesContent,
+                        ),
+                        const SizedBox(height: 12),
+                        _SettingsDisclosureCard(
+                          eyebrow: 'Family sharing',
+                          title: 'Care team visibility',
+                          summary:
+                              'Keep support and shared caregiver access easy to reach.',
+                          child: familySharingContent,
+                        ),
+                        const SizedBox(height: 12),
+                        _SettingsDisclosureCard(
+                          eyebrow: 'Privacy and trust',
+                          title: 'Trust and care information',
+                          summary:
+                              'See privacy, medical scope, and trust information clearly.',
+                          child: privacyTrustContent,
+                        ),
+                        const SizedBox(height: 12),
+                        _SettingsDisclosureCard(
+                          eyebrow: 'About NeoLife AI',
+                          title: 'Product and support',
+                          summary:
+                              'Read product context and support information when needed.',
+                          child: aboutContent,
+                        ),
+                      ],
+                    );
+
                     return Column(
                       children: [
                         profileHero,
                         const SizedBox(height: 16),
                         settingsOverview,
                         const SizedBox(height: 16),
-                        leftColumn,
-                        const SizedBox(height: 16),
-                        rightColumn,
+                        mobileSections,
                       ],
                     );
                   }
@@ -533,6 +596,69 @@ class _SettingsSectionCard extends StatelessWidget {
           const SizedBox(height: 14),
           child,
         ],
+      ),
+    );
+  }
+}
+
+class _SettingsDisclosureCard extends StatelessWidget {
+  const _SettingsDisclosureCard({
+    required this.eyebrow,
+    required this.title,
+    required this.summary,
+    required this.child,
+    this.initiallyExpanded = false,
+  });
+
+  final String eyebrow;
+  final String title;
+  final String summary;
+  final Widget child;
+  final bool initiallyExpanded;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: AppTheme.panelGradient,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppTheme.border),
+        boxShadow: AppTheme.softShadow,
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          initiallyExpanded: initiallyExpanded,
+          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          collapsedShape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                eyebrow,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppTheme.primary,
+                      fontWeight: FontWeight.w800,
+                    ),
+              ),
+              const SizedBox(height: 4),
+              Text(title, style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 4),
+              Text(summary, style: Theme.of(context).textTheme.bodyMedium),
+            ],
+          ),
+          children: [
+            const Divider(height: 18),
+            child,
+          ],
+        ),
       ),
     );
   }

@@ -44,15 +44,18 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> {
         return Scaffold(
           body: AmbientBackdrop(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+              padding: const EdgeInsets.fromLTRB(18, 16, 18, 24),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 8),
-                  BrandMark(
-                    compact: !wideBrand,
-                    showTagline: wideBrand,
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: BrandMark(
+                      compact: !wideBrand,
+                      showTagline: wideBrand,
+                    ),
                   ),
-                  SizedBox(height: wideBrand ? 18 : 12),
+                  SizedBox(height: wideBrand ? 18 : 10),
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 360),
                     switchInCurve: Curves.easeOutCubic,
@@ -72,6 +75,9 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> {
                           key: const ValueKey('welcome'),
                           onSignIn: session.showSignIn,
                           onRegister: session.showRegister,
+                          onAbout: () => _showAboutSheet(context),
+                          onPrivacy: () => _showLegalSheet(context),
+                          onSupport: () => _showSupportSheet(context),
                         ),
                       AuthStage.signIn => _AuthStageScaffold(
                           key: const ValueKey('signin'),
@@ -159,6 +165,79 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> {
   }
 
   Future<void> _showLegalSheet(BuildContext context) {
+    return _showInfoSheet(
+      context,
+      title: 'Privacy & trust',
+      intro:
+          'NeoLife AI is designed around trust, clear wellness context, and a reassuring family experience.',
+      points: const [
+        _InfoSheetPoint(
+          title: 'Private by design',
+          body:
+              'Caregiver and infant details stay protected on this device, with clear account controls and thoughtful access management.',
+        ),
+        _InfoSheetPoint(
+          title: 'Wellness guidance',
+          body:
+              'NeoLife AI supports infant wellness visibility and does not replace urgent medical evaluation or diagnosis.',
+        ),
+        _InfoSheetPoint(
+          title: 'Care support',
+          body:
+              'The NeoLife team is available for onboarding help, product questions, and privacy guidance.',
+        ),
+      ],
+    );
+  }
+
+  Future<void> _showAboutSheet(BuildContext context) {
+    return _showInfoSheet(
+      context,
+      title: 'About NeoLife AI',
+      intro:
+          'NeoLife AI brings live wellness signals, temperature trend context, and calmer caregiver guidance into one connected infant monitoring experience.',
+      points: const [
+        _InfoSheetPoint(
+          title: 'Built for reassurance',
+          body:
+              'The product is designed to help caregivers understand what is happening now before moving into deeper trend review.',
+        ),
+        _InfoSheetPoint(
+          title: 'Trend-first monitoring',
+          body:
+              'NeoLife AI highlights how values are moving over time so caregivers can make better sense of change.',
+        ),
+      ],
+    );
+  }
+
+  Future<void> _showSupportSheet(BuildContext context) {
+    return _showInfoSheet(
+      context,
+      title: 'Support',
+      intro:
+          'Need help getting started or adjusting the wearable? NeoLife support is here to help caregivers stay confident.',
+      points: const [
+        _InfoSheetPoint(
+          title: 'Onboarding help',
+          body:
+              'Get guidance with setup, placement, fit, and using the dashboard with confidence.',
+        ),
+        _InfoSheetPoint(
+          title: 'Contact',
+          body:
+              'Reach the NeoLife team at support@neolife.ai for account, trust, and product questions.',
+        ),
+      ],
+    );
+  }
+
+  Future<void> _showInfoSheet(
+    BuildContext context, {
+    required String title,
+    required String intro,
+    required List<_InfoSheetPoint> points,
+  }) {
     return showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
@@ -186,32 +265,22 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'Terms & Privacy',
+                  title,
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'NeoLife AI is designed around trust, clear wellness context, and a reassuring family experience.',
+                  intro,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: 18),
-                const _LegalPoint(
-                  title: 'Private by design',
-                  body:
-                      'This product preview keeps caregiver and infant details on this device while connected account services are still being finalized.',
-                ),
-                const SizedBox(height: 12),
-                const _LegalPoint(
-                  title: 'Wellness guidance',
-                  body:
-                      'NeoLife AI supports infant wellness visibility and does not replace urgent medical evaluation or diagnosis.',
-                ),
-                const SizedBox(height: 12),
-                const _LegalPoint(
-                  title: 'Care support',
-                  body:
-                      'The NeoLife team is available for onboarding help, product questions, and privacy guidance.',
-                ),
+                for (var i = 0; i < points.length; i++) ...[
+                  _LegalPoint(
+                    title: points[i].title,
+                    body: points[i].body,
+                  ),
+                  if (i != points.length - 1) const SizedBox(height: 12),
+                ],
               ],
             ),
           ),
@@ -226,10 +295,16 @@ class _WelcomeStage extends StatelessWidget {
     super.key,
     required this.onSignIn,
     required this.onRegister,
+    required this.onAbout,
+    required this.onPrivacy,
+    required this.onSupport,
   });
 
   final VoidCallback onSignIn;
   final VoidCallback onRegister;
+  final VoidCallback onAbout;
+  final VoidCallback onPrivacy;
+  final VoidCallback onSupport;
 
   @override
   Widget build(BuildContext context) {
@@ -247,6 +322,9 @@ class _WelcomeStage extends StatelessWidget {
           final story = _WelcomeCard(
             onSignIn: onSignIn,
             onRegister: onRegister,
+            onAbout: onAbout,
+            onPrivacy: onPrivacy,
+            onSupport: onSupport,
           );
 
           return wide
@@ -275,18 +353,32 @@ class _WelcomeCard extends StatelessWidget {
   const _WelcomeCard({
     required this.onSignIn,
     required this.onRegister,
+    required this.onAbout,
+    required this.onPrivacy,
+    required this.onSupport,
   });
 
   final VoidCallback onSignIn;
   final VoidCallback onRegister;
+  final VoidCallback onAbout;
+  final VoidCallback onPrivacy;
+  final VoidCallback onSupport;
 
   @override
   Widget build(BuildContext context) {
+    final compact = AppTheme.isPhone(context);
+
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: AppTheme.panelPadding(
+        context,
+        phone: 18,
+        regular: 24,
+      ),
       decoration: BoxDecoration(
         gradient: AppTheme.panelGradient,
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(
+          AppTheme.panelRadius(context, phone: 26, regular: 32),
+        ),
         border: Border.all(color: AppTheme.border),
         boxShadow: AppTheme.softShadow,
       ),
@@ -307,22 +399,27 @@ class _WelcomeCard extends StatelessWidget {
                   ),
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: compact ? 14 : 16),
           Text(
             'A calmer way to stay close to what matters.',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  height: 1.05,
+            style: (compact
+                    ? Theme.of(context).textTheme.headlineSmall
+                    : Theme.of(context).textTheme.headlineMedium)
+                ?.copyWith(
+              height: 1.05,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Live wellness signals, temperature trend context, and thoughtful caregiver guidance in one trusted experience.',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  height: 1.48,
                 ),
           ),
-          const SizedBox(height: 10),
-          Text(
-            'NeoLife AI brings live wellness signals, temperature trend context, and caregiver-ready guidance into one trusted experience.',
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           LayoutBuilder(
             builder: (context, constraints) {
-              final compact = constraints.maxWidth < 420;
+              final stacked = constraints.maxWidth < 420;
               final createButton = FilledButton.icon(
                 onPressed: onRegister,
                 style: FilledButton.styleFrom(
@@ -339,7 +436,7 @@ class _WelcomeCard extends StatelessWidget {
                 label: const Text('Sign in'),
               );
 
-              if (compact) {
+              if (stacked) {
                 return Column(
                   children: [
                     createButton,
@@ -358,20 +455,19 @@ class _WelcomeCard extends StatelessWidget {
               );
             },
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: const [
               _WelcomeTag(label: 'Live wellness overview'),
-              _WelcomeTag(label: 'Temperature trend monitoring'),
               _WelcomeTag(label: 'Caregiver-ready support'),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           LayoutBuilder(
             builder: (context, constraints) {
-              final compact = constraints.maxWidth < 520;
+              final stacked = constraints.maxWidth < 520;
               final cards = const [
                 _WelcomeMetric(
                   icon: Icons.favorite_outline_rounded,
@@ -385,7 +481,7 @@ class _WelcomeCard extends StatelessWidget {
                 ),
               ];
 
-              if (compact) {
+              if (stacked) {
                 return Row(
                   children: [
                     Expanded(child: cards[0]),
@@ -405,14 +501,14 @@ class _WelcomeCard extends StatelessWidget {
               );
             },
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           Wrap(
             spacing: 10,
             runSpacing: 10,
-            children: const [
-              _WelcomeFooterPill(label: 'About NeoLife AI'),
-              _WelcomeFooterPill(label: 'Privacy & Trust'),
-              _WelcomeFooterPill(label: 'Support'),
+            children: [
+              _WelcomeFooterPill(label: 'About', onTap: onAbout),
+              _WelcomeFooterPill(label: 'Privacy', onTap: onPrivacy),
+              _WelcomeFooterPill(label: 'Support', onTap: onSupport),
             ],
           ),
         ],
@@ -462,7 +558,7 @@ class _WelcomeMetric extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.78),
         borderRadius: BorderRadius.circular(20),
@@ -494,25 +590,31 @@ class _WelcomeMetric extends StatelessWidget {
 class _WelcomeFooterPill extends StatelessWidget {
   const _WelcomeFooterPill({
     required this.label,
+    required this.onTap,
   });
 
   final String label;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.72),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: AppTheme.border),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.textPrimary,
-              fontWeight: FontWeight.w700,
-            ),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(999),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.72),
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: AppTheme.border),
+        ),
+        child: Text(
+          label,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppTheme.textPrimary,
+                fontWeight: FontWeight.w700,
+              ),
+        ),
       ),
     );
   }
@@ -583,11 +685,13 @@ class _HeroVisual extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         gradient: AppTheme.panelGradient,
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(
+          AppTheme.panelRadius(context, phone: 26, regular: 32),
+        ),
         border: Border.all(color: AppTheme.border),
         boxShadow: AppTheme.softShadow,
       ),
-      padding: const EdgeInsets.all(16),
+      padding: AppTheme.panelPadding(context, phone: 12, regular: 16),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(22),
         child: LayoutBuilder(
@@ -595,7 +699,7 @@ class _HeroVisual extends StatelessWidget {
             final compact = constraints.maxWidth < 500;
 
             return AspectRatio(
-              aspectRatio: compact ? 1.28 : 1.04,
+              aspectRatio: compact ? 1.48 : 1.08,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
@@ -605,7 +709,7 @@ class _HeroVisual extends StatelessWidget {
                       gradient: LinearGradient(
                         colors: [
                           AppTheme.primaryDeep.withValues(alpha: 0.01),
-                          AppTheme.primaryDeep.withValues(alpha: 0.16),
+                          AppTheme.primaryDeep.withValues(alpha: 0.12),
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
@@ -648,10 +752,10 @@ class _HeroVisual extends StatelessWidget {
                     bottom: 16,
                     child: Container(
                       constraints:
-                          BoxConstraints(maxWidth: compact ? 250 : 300),
-                      padding: EdgeInsets.all(compact ? 14 : 18),
+                          BoxConstraints(maxWidth: compact ? 220 : 286),
+                      padding: EdgeInsets.all(compact ? 12 : 16),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.66),
+                        color: Colors.white.withValues(alpha: 0.56),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: Colors.white.withValues(alpha: 0.18),
@@ -667,19 +771,21 @@ class _HeroVisual extends StatelessWidget {
                           const SizedBox(height: 4),
                           Text(
                             subtitle,
-                            maxLines: compact ? 2 : 3,
+                            maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
-                          const SizedBox(height: 10),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: const [
-                              _HeroVisualStat(label: 'Private by design'),
-                              _HeroVisualStat(label: 'Trend-first view'),
-                            ],
-                          ),
+                          if (!compact) ...[
+                            const SizedBox(height: 10),
+                            const Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                _HeroVisualStat(label: 'Private by design'),
+                                _HeroVisualStat(label: 'Trend-first view'),
+                              ],
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -826,6 +932,7 @@ class _AuthFormCardState extends State<_AuthFormCard> {
 
   @override
   Widget build(BuildContext context) {
+    final compact = AppTheme.isPhone(context);
     final email = widget.emailController.text.trim();
     final password = widget.passwordController.text;
     final caregiverName = widget.caregiverController?.text.trim() ?? '';
@@ -839,10 +946,12 @@ class _AuthFormCardState extends State<_AuthFormCard> {
         emailValid && passwordValid && profileValid && widget.acceptedTerms;
 
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: AppTheme.panelPadding(context, phone: 18, regular: 24),
       decoration: BoxDecoration(
         gradient: AppTheme.panelGradient,
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(
+          AppTheme.panelRadius(context, phone: 26, regular: 32),
+        ),
         border: Border.all(color: AppTheme.border),
         boxShadow: AppTheme.softShadow,
       ),
@@ -861,17 +970,18 @@ class _AuthFormCardState extends State<_AuthFormCard> {
                     ? Icons.lock_outline_rounded
                     : Icons.child_care_outlined,
               ),
-              const _FormPill(
-                label: 'Support included',
-                icon: Icons.support_agent_rounded,
-              ),
+              if (!compact)
+                const _FormPill(
+                  label: 'Support included',
+                  icon: Icons.support_agent_rounded,
+                ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Text(widget.title, style: Theme.of(context).textTheme.headlineSmall),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(widget.subtitle, style: Theme.of(context).textTheme.bodyMedium),
-          const SizedBox(height: 20),
+          const SizedBox(height: 18),
           if (widget.mode == _AuthMode.register) ...[
             _AuthTextField(
               label: 'Caregiver name',
@@ -919,9 +1029,9 @@ class _AuthFormCardState extends State<_AuthFormCard> {
           ),
           if (password.isNotEmpty && !passwordValid)
             const _ValidationText('Password must be at least 6 characters.'),
-          const SizedBox(height: 18),
+          const SizedBox(height: 16),
           Container(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.84),
               borderRadius: BorderRadius.circular(20),
@@ -1186,6 +1296,16 @@ class _FormPill extends StatelessWidget {
       ),
     );
   }
+}
+
+class _InfoSheetPoint {
+  const _InfoSheetPoint({
+    required this.title,
+    required this.body,
+  });
+
+  final String title;
+  final String body;
 }
 
 class _LegalPoint extends StatelessWidget {

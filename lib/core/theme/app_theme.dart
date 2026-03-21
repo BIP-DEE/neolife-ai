@@ -18,9 +18,36 @@ class AppTheme {
   static const Color warning = Color(0xFFD8A047);
   static const Color danger = Color(0xFFE07279);
   static const Color textPrimary = Color(0xFF152440);
-  static const Color textSecondary = Color(0xFF6D7A93);
-  static const Color border = Color(0xFFE3EAF5);
+  static const Color textSecondary = Color(0xFF5B6982);
+  static const Color border = Color(0xFFDCE4F0);
   static const Color shadow = Color(0x12223857);
+
+  static bool isPhone(BuildContext context) =>
+      MediaQuery.sizeOf(context).width < 720;
+
+  static EdgeInsets panelPadding(
+    BuildContext context, {
+    double phone = 16,
+    double regular = 20,
+  }) {
+    return EdgeInsets.all(isPhone(context) ? phone : regular);
+  }
+
+  static double panelRadius(
+    BuildContext context, {
+    double phone = 24,
+    double regular = 30,
+  }) {
+    return isPhone(context) ? phone : regular;
+  }
+
+  static double sectionGap(
+    BuildContext context, {
+    double phone = 18,
+    double regular = 24,
+  }) {
+    return isPhone(context) ? phone : regular;
+  }
 
   static List<BoxShadow> get softShadow => [
         const BoxShadow(
