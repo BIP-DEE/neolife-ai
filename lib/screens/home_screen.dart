@@ -82,11 +82,16 @@ class HomeScreen extends StatelessWidget {
                     child: LayoutBuilder(
                       builder: (context, constraints) {
                         final columns = constraints.maxWidth >= 900 ? 4 : 2;
+                        final narrow = constraints.maxWidth < 380;
                         return GridView.count(
                           crossAxisCount: columns,
                           crossAxisSpacing: 14,
                           mainAxisSpacing: 14,
-                          childAspectRatio: columns == 4 ? 1.14 : 1.0,
+                          childAspectRatio: columns == 4
+                              ? 1.14
+                              : narrow
+                                  ? 0.84
+                                  : 1.0,
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           children: [
@@ -378,62 +383,57 @@ class _DashboardHeroCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Current status',
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: AppTheme.primary,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          infantName,
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    color: AppTheme.primary,
-                                  ),
-                        ),
-                      ],
+                    child: Text(
+                      infantName,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: AppTheme.primary,
+                          ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10),
                   StatusBadge(label: status.label, color: statusColor),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               Text(
                 statusHeadline,
                 style: (compact
-                        ? Theme.of(context).textTheme.titleLarge
+                        ? Theme.of(context).textTheme.titleMedium
                         : Theme.of(context).textTheme.headlineMedium)
                     ?.copyWith(
                   height: 1.08,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 540),
                 child: SizedBox(
-                  height: compact ? 34 : 42,
+                  height: compact ? 20 : 42,
                   child: Text(
                     statusCaption,
-                    maxLines: 2,
+                    maxLines: compact ? 1 : 2,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    style: (compact
+                            ? Theme.of(context).textTheme.bodyMedium
+                            : Theme.of(context).textTheme.bodyLarge)
+                        ?.copyWith(
+                      color: compact
+                          ? AppTheme.textSecondary
+                          : AppTheme.textPrimary,
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.symmetric(
+                  horizontal: compact ? 10 : 12,
+                  vertical: compact ? 10 : 12,
+                ),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -460,7 +460,7 @@ class _DashboardHeroCard extends StatelessWidget {
                                     fontWeight: FontWeight.w800,
                                   ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 2),
                         Text(
                           isConnected
                               ? 'Pod connected and updating live.'
@@ -477,15 +477,23 @@ class _DashboardHeroCard extends StatelessWidget {
                       onPressed: onToggleConnection,
                       style: FilledButton.styleFrom(
                         minimumSize: Size(
-                          stacked ? double.infinity : 168,
-                          compact ? 44 : 48,
+                          stacked
+                              ? double.infinity
+                              : compact
+                                  ? 144
+                                  : 168,
+                          compact ? 42 : 48,
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: compact ? 12 : 16,
+                          vertical: compact ? 12 : 14,
                         ),
                       ),
                       icon: Icon(
                         isConnected
                             ? Icons.bluetooth_disabled_rounded
                             : Icons.bluetooth_connected_rounded,
-                        size: 18,
+                        size: 16,
                       ),
                       label: Text(
                         isConnected ? 'Disconnect pod' : 'Reconnect pod',
@@ -497,53 +505,52 @@ class _DashboardHeroCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           details,
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 10),
                           button,
                         ],
                       );
                     }
 
                     return Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(child: details),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 10),
                         button,
                       ],
                     );
                   },
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               Wrap(
-                spacing: 8,
-                runSpacing: 8,
+                spacing: 6,
+                runSpacing: 6,
                 children: [
                   _HeroInfoTile(
-                    label: 'Feed',
-                    value: connectionLabel,
+                    text: connectionLabel,
                     icon: Icons.wifi_tethering_rounded,
-                    valueColor: AppTheme.secondary,
+                    tint: AppTheme.secondary,
                   ),
                   _HeroInfoTile(
-                    label: 'Confidence',
-                    value: '${(qualityValue * 100).round()}%',
+                    text: '${(qualityValue * 100).round()}%',
                     icon: Icons.shield_outlined,
-                    valueColor: AppTheme.primaryDeep,
+                    tint: AppTheme.primaryDeep,
                   ),
                   _HeroInfoTile(
-                    label: 'Placement',
-                    value: placementLabel,
+                    text: placementLabel,
                     icon: Icons.place_outlined,
-                    valueColor: AppTheme.accent,
+                    tint: AppTheme.accent,
                   ),
                 ],
               ),
-              const SizedBox(height: 6),
-              TextButton.icon(
-                onPressed: onPrimaryAction,
-                icon: const Icon(Icons.insights_outlined, size: 18),
-                label: const Text('More details'),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: onPrimaryAction,
+                  icon: const Icon(Icons.insights_outlined, size: 18),
+                  label: const Text('More details'),
+                ),
               ),
             ],
           );
@@ -840,21 +847,11 @@ class _PlacementQuickCard extends StatelessWidget {
           LayoutBuilder(
             builder: (context, constraints) {
               final stacked = constraints.maxWidth < 360;
-              final titleBlock = Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Placement mode',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontSize: compact ? 16 : null,
-                        ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Choose where the pod is worn.',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ],
+              final titleBlock = Text(
+                'Placement mode',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontSize: compact ? 16 : null,
+                    ),
               );
               final actions = Wrap(
                 spacing: 8,
@@ -891,7 +888,7 @@ class _PlacementQuickCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     titleBlock,
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
                     actions,
                   ],
                 );
@@ -907,12 +904,12 @@ class _PlacementQuickCard extends StatelessWidget {
               );
             },
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           Container(
-            padding: const EdgeInsets.all(6),
+            padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.86),
-              borderRadius: BorderRadius.circular(22),
+              borderRadius: BorderRadius.circular(20),
               border: Border.all(color: AppTheme.border),
             ),
             child: Row(
@@ -1024,12 +1021,16 @@ class _PlacementChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final compact = AppTheme.isPhone(context);
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(18),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 220),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 10 : 12,
+          vertical: compact ? 10 : 12,
+        ),
         decoration: BoxDecoration(
           gradient: selected
               ? LinearGradient(
@@ -1047,19 +1048,22 @@ class _PlacementChip extends StatelessWidget {
             color: selected ? AppTheme.secondary : AppTheme.border,
           ),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 18, color: AppTheme.primaryDeep),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.textPrimary,
-                    fontWeight: FontWeight.w800,
-                  ),
-            ),
-          ],
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: compact ? 16 : 18, color: AppTheme.primaryDeep),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppTheme.textPrimary,
+                      fontWeight: FontWeight.w800,
+                    ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1195,11 +1199,10 @@ class _RecentChangesCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              StatusBadge(label: status.label, color: color),
-              const Spacer(),
-              Container(
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final stacked = constraints.maxWidth < 270;
+              final countPill = Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10,
                   vertical: 7,
@@ -1215,8 +1218,27 @@ class _RecentChangesCard extends StatelessWidget {
                         fontWeight: FontWeight.w800,
                       ),
                 ),
-              ),
-            ],
+              );
+
+              if (stacked) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    StatusBadge(label: status.label, color: color),
+                    const SizedBox(height: 8),
+                    countPill,
+                  ],
+                );
+              }
+
+              return Row(
+                children: [
+                  StatusBadge(label: status.label, color: color),
+                  const Spacer(),
+                  countPill,
+                ],
+              );
+            },
           ),
           const SizedBox(height: 16),
           Text(
@@ -1293,21 +1315,19 @@ class _RecentChangesCard extends StatelessWidget {
 
 class _HeroInfoTile extends StatelessWidget {
   const _HeroInfoTile({
-    required this.label,
-    required this.value,
+    required this.text,
     required this.icon,
-    required this.valueColor,
+    required this.tint,
   });
 
-  final String label;
-  final String value;
+  final String text;
   final IconData icon;
-  final Color valueColor;
+  final Color tint;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.82),
         borderRadius: BorderRadius.circular(999),
@@ -1317,23 +1337,24 @@ class _HeroInfoTile extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 26,
-            height: 26,
+            width: 24,
+            height: 24,
             decoration: BoxDecoration(
-              color: valueColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(9),
+              color: tint.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(8),
             ),
             alignment: Alignment.center,
-            child: Icon(icon, size: 14, color: valueColor),
+            child: Icon(icon, size: 13, color: tint),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 7),
           Text(
-            '$label: $value',
+            text,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: AppTheme.textPrimary,
                   fontWeight: FontWeight.w800,
+                  height: 1.1,
                 ),
           ),
         ],

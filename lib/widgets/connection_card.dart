@@ -97,7 +97,7 @@ class ConnectionCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
                   Text(
-                    'Designed for startup demos, parent empathy, and a premium first impression.',
+                    'Designed for calm caregiver reassurance, parent empathy, and a premium first impression.',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: AppTheme.primary,
                           fontWeight: FontWeight.w700,

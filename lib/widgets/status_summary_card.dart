@@ -35,7 +35,7 @@ class StatusSummaryCard extends StatelessWidget {
       SensorStatus.unusual =>
         'Review placement and observe the next few live samples.',
       SensorStatus.anomaly =>
-        'Treat this as a stronger demo alert and investigate quickly.',
+        'Treat this as a sustained alert pattern and investigate quickly.',
     };
 
     return Container(

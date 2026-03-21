@@ -36,9 +36,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               AppHeader(
                 eyebrow: 'Settings',
-                title: 'Settings and account',
+                title: 'Settings',
                 subtitle:
-                    'Manage caregiver details, baby profile context, notifications, trust, and account actions in one organized place.',
+                    'Manage caregiver details, baby profile context, notifications, trust, and account actions in one place.',
                 statusLabel: 'Account',
               ),
               const SizedBox(height: 18),
@@ -374,10 +374,12 @@ class _ProfileHeroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      padding: AppTheme.panelPadding(context, phone: 16, regular: 18),
       decoration: BoxDecoration(
         gradient: AppTheme.panelGradient,
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(
+          AppTheme.panelRadius(context, phone: 24, regular: 30),
+        ),
         border: Border.all(color: AppTheme.border),
         boxShadow: AppTheme.softShadow,
       ),
@@ -385,8 +387,8 @@ class _ProfileHeroCard extends StatelessWidget {
         builder: (context, constraints) {
           final wide = constraints.maxWidth >= 760;
           final avatar = Container(
-            width: 68,
-            height: 68,
+            width: wide ? 68 : 58,
+            height: wide ? 68 : 58,
             decoration: BoxDecoration(
               gradient: const LinearGradient(
                 colors: [
@@ -399,9 +401,12 @@ class _ProfileHeroCard extends StatelessWidget {
             alignment: Alignment.center,
             child: Text(
               caregiverName.characters.first.toUpperCase(),
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: Colors.white,
-                  ),
+              style: (wide
+                      ? Theme.of(context).textTheme.headlineSmall
+                      : Theme.of(context).textTheme.titleLarge)
+                  ?.copyWith(
+                color: Colors.white,
+              ),
             ),
           );
 
@@ -453,7 +458,7 @@ class _ProfileHeroCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 avatar,
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 copy,
               ],
             );
@@ -511,7 +516,7 @@ class _SettingsActionsCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Account actions and quick controls',
+            'Account and controls',
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 8),

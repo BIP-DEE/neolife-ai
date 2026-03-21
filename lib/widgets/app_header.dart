@@ -36,10 +36,10 @@ class AppHeader extends StatelessWidget {
             return Container(
               width: double.infinity,
               padding: EdgeInsets.fromLTRB(
-                compact ? 12 : 22,
-                compact ? 10 : 18,
-                compact ? 12 : 22,
-                compact ? 10 : 18,
+                compact ? 10 : 22,
+                compact ? 8 : 18,
+                compact ? 10 : 22,
+                compact ? 8 : 18,
               ),
               decoration: BoxDecoration(
                 gradient: compact
@@ -52,14 +52,14 @@ class AppHeader extends StatelessWidget {
                         end: Alignment.bottomCenter,
                       )
                     : AppTheme.panelGradient,
-                borderRadius: BorderRadius.circular(compact ? 20 : 30),
+                borderRadius: BorderRadius.circular(compact ? 18 : 30),
                 border: Border.all(color: AppTheme.border),
                 boxShadow: compact
                     ? [
                         BoxShadow(
                           color: AppTheme.shadow.withValues(alpha: 0.42),
-                          blurRadius: 16,
-                          offset: const Offset(0, 8),
+                          blurRadius: 14,
+                          offset: const Offset(0, 7),
                         ),
                       ]
                     : AppTheme.softShadow,
@@ -90,7 +90,7 @@ class AppHeader extends StatelessWidget {
                     ],
                   ),
                   if (hasMeta) ...[
-                    SizedBox(height: compact ? 8 : 16),
+                    SizedBox(height: compact ? 6 : 16),
                     if (compact)
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,14 +112,14 @@ class AppHeader extends StatelessWidget {
                                   ),
                                 if (title != null && title!.isNotEmpty) ...[
                                   if (eyebrow != null && eyebrow!.isNotEmpty)
-                                    const SizedBox(height: 2),
+                                    const SizedBox(height: 1),
                                   Text(
                                     title!,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: Theme.of(context)
                                         .textTheme
-                                        .titleLarge
+                                        .titleMedium
                                         ?.copyWith(
                                           color: AppTheme.textPrimary,
                                         ),
@@ -130,7 +130,7 @@ class AppHeader extends StatelessWidget {
                           ),
                           if (statusLabel != null &&
                               statusLabel!.isNotEmpty) ...[
-                            const SizedBox(width: 10),
+                            const SizedBox(width: 8),
                             _HeaderChip(
                               label: statusLabel!,
                               icon: Icons.circle,

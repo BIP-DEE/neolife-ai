@@ -269,7 +269,7 @@ class _AdaptiveRail extends StatelessWidget {
       _SidebarItem(
           index: 2, label: 'Alerts', icon: Icons.notifications_rounded),
       _SidebarItem(index: 3, label: 'Device', icon: Icons.bluetooth_connected),
-      _SidebarItem(index: 4, label: 'Profile', icon: Icons.person_rounded),
+      _SidebarItem(index: 4, label: 'Settings', icon: Icons.settings_rounded),
     ];
 
     return Container(

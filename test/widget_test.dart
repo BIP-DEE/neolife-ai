@@ -188,8 +188,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 700));
 
-    expect(find.text('Settings and account'), findsOneWidget);
-    expect(find.text('Account actions and quick controls'), findsOneWidget);
+    expect(find.text('Account and controls'), findsOneWidget);
   });
 
   testWidgets('main navigation reaches each primary screen', (tester) async {
@@ -234,6 +233,42 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('nav-settings')));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 700));
-    expect(find.text('Settings and account'), findsOneWidget);
+    expect(find.text('Account and controls'), findsOneWidget);
+  });
+
+  testWidgets('dashboard stays stable across narrow phone widths', (
+    tester,
+  ) async {
+    final widths = [320.0, 360.0, 390.0, 430.0];
+
+    for (final width in widths) {
+      await tester.binding.setSurfaceSize(Size(width, 900));
+
+      final session = AppSessionController()
+        ..completeAuthentication(
+          email: 'hello@neolife.ai',
+          caregiverName: 'Chanda',
+          infantName: 'Baby Neo',
+        );
+
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider<AppSessionController>.value(value: session),
+            ChangeNotifierProvider(create: (_) => NeoLifeController()),
+          ],
+          child: const NeoLifeApp(),
+        ),
+      );
+
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 700));
+
+      expect(find.text('Key wellness signals'), findsOneWidget);
+      expect(find.text('Recommended action'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    }
+
+    addTearDown(() => tester.binding.setSurfaceSize(null));
   });
 }

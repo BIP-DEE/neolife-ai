@@ -338,9 +338,9 @@ class _WelcomeStage extends StatelessWidget {
                 )
               : Column(
                   children: [
-                    visual,
-                    const SizedBox(height: 16),
                     story,
+                    const SizedBox(height: 12),
+                    visual,
                   ],
                 );
         },
@@ -464,43 +464,59 @@ class _WelcomeCard extends StatelessWidget {
               _WelcomeTag(label: 'Caregiver-ready support'),
             ],
           ),
-          const SizedBox(height: 14),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final stacked = constraints.maxWidth < 520;
-              final cards = const [
-                _WelcomeMetric(
+          const SizedBox(height: 12),
+          if (compact)
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: const [
+                _WelcomeMicroFact(
                   icon: Icons.favorite_outline_rounded,
-                  title: 'Live now',
-                  body: 'See the current wellness state first.',
+                  label: 'Live now',
                 ),
-                _WelcomeMetric(
+                _WelcomeMicroFact(
                   icon: Icons.notifications_active_outlined,
-                  title: 'Trusted alerts',
-                  body: 'Know what changed and what needs review.',
+                  label: 'Trusted alerts',
                 ),
-              ];
+              ],
+            )
+          else
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final stacked = constraints.maxWidth < 520;
+                final cards = const [
+                  _WelcomeMetric(
+                    icon: Icons.favorite_outline_rounded,
+                    title: 'Live now',
+                    body: 'See the current wellness state first.',
+                  ),
+                  _WelcomeMetric(
+                    icon: Icons.notifications_active_outlined,
+                    title: 'Trusted alerts',
+                    body: 'Know what changed and what needs review.',
+                  ),
+                ];
 
-              if (stacked) {
+                if (stacked) {
+                  return Row(
+                    children: [
+                      Expanded(child: cards[0]),
+                      const SizedBox(width: 10),
+                      Expanded(child: cards[1]),
+                    ],
+                  );
+                }
+
                 return Row(
                   children: [
-                    Expanded(child: cards[0]),
-                    const SizedBox(width: 10),
-                    Expanded(child: cards[1]),
+                    for (var i = 0; i < cards.length; i++) ...[
+                      Expanded(child: cards[i]),
+                      if (i != cards.length - 1) const SizedBox(width: 10),
+                    ],
                   ],
                 );
-              }
-
-              return Row(
-                children: [
-                  for (var i = 0; i < cards.length; i++) ...[
-                    Expanded(child: cards[i]),
-                    if (i != cards.length - 1) const SizedBox(width: 10),
-                  ],
-                ],
-              );
-            },
-          ),
+              },
+            ),
           const SizedBox(height: 12),
           Wrap(
             spacing: 10,
@@ -557,8 +573,9 @@ class _WelcomeMetric extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final compact = AppTheme.isPhone(context);
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(compact ? 10 : 12),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.78),
         borderRadius: BorderRadius.circular(20),
@@ -568,19 +585,56 @@ class _WelcomeMetric extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 36,
-            height: 36,
+            width: compact ? 32 : 36,
+            height: compact ? 32 : 36,
             decoration: BoxDecoration(
               color: AppTheme.secondarySoft,
               borderRadius: BorderRadius.circular(12),
             ),
             alignment: Alignment.center,
-            child: Icon(icon, size: 18, color: AppTheme.primaryDeep),
+            child: Icon(icon,
+                size: compact ? 16 : 18, color: AppTheme.primaryDeep),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: compact ? 8 : 10),
           Text(title, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 4),
           Text(body, style: Theme.of(context).textTheme.bodyMedium),
+        ],
+      ),
+    );
+  }
+}
+
+class _WelcomeMicroFact extends StatelessWidget {
+  const _WelcomeMicroFact({
+    required this.icon,
+    required this.label,
+  });
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.78),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: AppTheme.border),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: AppTheme.primaryDeep),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppTheme.textPrimary,
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
         ],
       ),
     );
@@ -658,9 +712,9 @@ class _AuthStageScaffold extends StatelessWidget {
                 )
               : Column(
                   children: [
-                    visual,
-                    const SizedBox(height: 16),
                     form,
+                    const SizedBox(height: 12),
+                    visual,
                   ],
                 );
         },
@@ -699,7 +753,7 @@ class _HeroVisual extends StatelessWidget {
             final compact = constraints.maxWidth < 500;
 
             return AspectRatio(
-              aspectRatio: compact ? 1.48 : 1.08,
+              aspectRatio: compact ? 1.62 : 1.08,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
@@ -709,18 +763,19 @@ class _HeroVisual extends StatelessWidget {
                       gradient: LinearGradient(
                         colors: [
                           AppTheme.primaryDeep.withValues(alpha: 0.01),
-                          AppTheme.primaryDeep.withValues(alpha: 0.12),
+                          AppTheme.primaryDeep.withValues(alpha: 0.10),
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                       ),
                     ),
                   ),
-                  const Positioned(
-                    top: 16,
-                    left: 16,
-                    child: _HeroVisualChip(),
-                  ),
+                  if (!compact)
+                    const Positioned(
+                      top: 16,
+                      left: 16,
+                      child: _HeroVisualChip(),
+                    ),
                   if (!compact)
                     Positioned(
                       top: 16,
@@ -752,10 +807,10 @@ class _HeroVisual extends StatelessWidget {
                     bottom: 16,
                     child: Container(
                       constraints:
-                          BoxConstraints(maxWidth: compact ? 220 : 286),
-                      padding: EdgeInsets.all(compact ? 12 : 16),
+                          BoxConstraints(maxWidth: compact ? 192 : 286),
+                      padding: EdgeInsets.all(compact ? 10 : 16),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.56),
+                        color: Colors.white.withValues(alpha: 0.46),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: Colors.white.withValues(alpha: 0.18),
