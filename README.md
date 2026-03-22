@@ -93,9 +93,13 @@ cd "/Users/chandadiwakar/Desktop/neolife ai/Neo"
 ```
 
 - The script binds Flutter web-server to `0.0.0.0` on port `8098`.
-- If `cloudflared` is installed, it also opens a public tunnel and prints a shareable review URL.
-- If `cloudflared` is not installed yet, add it with:
+- It tries a public `cloudflared` tunnel first and falls back to `localtunnel` if Cloudflare quick tunnels are unavailable.
+- The script prints the shareable HTTPS review URL in the terminal once the tunnel is ready.
+- If you need to install a tunnel tool manually, use one of these:
 
 ```bash
 brew install cloudflared
+npm install -g localtunnel
 ```
+
+- On the welcome screen, use `Enter review mode` to bypass authentication and review the full app with mock data.

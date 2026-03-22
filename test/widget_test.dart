@@ -269,7 +269,7 @@ void main() {
   testWidgets('dashboard stays stable across narrow phone widths', (
     tester,
   ) async {
-    final widths = [320.0, 360.0, 390.0, 430.0];
+    final widths = [320.0, 360.0, 390.0, 412.0, 430.0];
 
     for (final width in widths) {
       await tester.binding.setSurfaceSize(Size(width, 900));
@@ -296,6 +296,34 @@ void main() {
 
       expect(find.text('Key wellness signals'), findsOneWidget);
       expect(find.text('Recommended action'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    }
+
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+  });
+
+  testWidgets('welcome flow stays stable across narrow phone widths', (
+    tester,
+  ) async {
+    final widths = [320.0, 360.0, 390.0, 412.0, 430.0];
+
+    for (final width in widths) {
+      await tester.binding.setSurfaceSize(Size(width, 920));
+
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_) => AppSessionController()),
+            ChangeNotifierProvider(create: (_) => NeoLifeController()),
+          ],
+          child: const NeoLifeApp(),
+        ),
+      );
+
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+
+      expect(find.text('Create account'), findsOneWidget);
       expect(tester.takeException(), isNull);
     }
 

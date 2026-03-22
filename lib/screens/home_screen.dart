@@ -10,6 +10,7 @@ import '../state/neo_life_controller.dart';
 import '../widgets/app_header.dart';
 import '../widgets/app_page_layout.dart';
 import '../widgets/brand_mark.dart';
+import '../widgets/placement_mode_selector.dart';
 import '../widgets/sensor_metric_card.dart';
 import '../widgets/signal_preview_card.dart';
 import '../widgets/status_badge.dart';
@@ -56,7 +57,8 @@ class HomeScreen extends StatelessWidget {
                     isConnected: controller.isConnected,
                     statusHeadline: controller.statusHeadline,
                     statusCaption: controller.statusCaption,
-                    connectionLabel: controller.connectionLabel,
+                    connectionLabel:
+                        controller.isConnected ? 'Feed live' : 'Feed paused',
                     qualityValue: controller.signalQuality,
                     placementLabel: controller.placementMode.shortLabel,
                     heroImagePath:
@@ -200,7 +202,6 @@ class HomeScreen extends StatelessWidget {
                         selectedMode: controller.placementMode,
                         helperText: controller.placementMode.helperText,
                         qualityLabel: controller.qualityLabel,
-                        qualityValue: controller.signalQuality,
                         onChanged: controller.setPlacementMode,
                         onOpenDevice: onOpenDevice,
                       ),
@@ -229,7 +230,6 @@ class HomeScreen extends StatelessWidget {
                           selectedMode: controller.placementMode,
                           helperText: controller.placementMode.helperText,
                           qualityLabel: controller.qualityLabel,
-                          qualityValue: controller.signalQuality,
                           onChanged: controller.setPlacementMode,
                           onOpenDevice: onOpenDevice,
                         ),
@@ -366,7 +366,7 @@ class _DashboardHeroCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: AppTheme.panelPadding(context, phone: 16, regular: 18),
+      padding: AppTheme.panelPadding(context, phone: 14, regular: 18),
       decoration: BoxDecoration(
         gradient: AppTheme.panelGradient,
         borderRadius: BorderRadius.circular(
@@ -401,17 +401,17 @@ class _DashboardHeroCard extends StatelessWidget {
               Text(
                 statusHeadline,
                 style: (compact
-                        ? Theme.of(context).textTheme.titleMedium
+                        ? Theme.of(context).textTheme.titleLarge
                         : Theme.of(context).textTheme.headlineMedium)
                     ?.copyWith(
                   height: 1.08,
                 ),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 4),
               ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 540),
                 child: SizedBox(
-                  height: compact ? 20 : 42,
+                  height: compact ? 18 : 42,
                   child: Text(
                     statusCaption,
                     maxLines: compact ? 1 : 2,
@@ -427,12 +427,12 @@ class _DashboardHeroCard extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(
                   horizontal: compact ? 10 : 12,
-                  vertical: compact ? 10 : 12,
+                  vertical: compact ? 9 : 12,
                 ),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -448,28 +448,39 @@ class _DashboardHeroCard extends StatelessWidget {
                 ),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    final stacked = constraints.maxWidth < 440;
-                    final details = Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    final stacked = constraints.maxWidth < 400;
+                    final details = Row(
                       children: [
-                        Text(
-                          'Pod connection',
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: AppTheme.primary,
-                                    fontWeight: FontWeight.w800,
-                                  ),
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: AppTheme.primary.withValues(alpha: 0.10),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          alignment: Alignment.center,
+                          child: Icon(
+                            isConnected
+                                ? Icons.bluetooth_connected_rounded
+                                : Icons.bluetooth_disabled_rounded,
+                            size: 16,
+                            color: AppTheme.primaryDeep,
+                          ),
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          isConnected
-                              ? 'Pod connected and updating live.'
-                              : 'Pod disconnected. Reconnect to restore live monitoring.',
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: AppTheme.textPrimary,
-                                    fontWeight: FontWeight.w700,
-                                  ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            isConnected ? 'Pod connected' : 'Pod disconnected',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppTheme.textPrimary,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                          ),
                         ),
                       ],
                     );
@@ -480,13 +491,13 @@ class _DashboardHeroCard extends StatelessWidget {
                           stacked
                               ? double.infinity
                               : compact
-                                  ? 144
+                                  ? 138
                                   : 168,
-                          compact ? 42 : 48,
+                          compact ? 40 : 48,
                         ),
                         padding: EdgeInsets.symmetric(
-                          horizontal: compact ? 12 : 16,
-                          vertical: compact ? 12 : 14,
+                          horizontal: compact ? 10 : 16,
+                          vertical: compact ? 10 : 14,
                         ),
                       ),
                       icon: Icon(
@@ -533,12 +544,12 @@ class _DashboardHeroCard extends StatelessWidget {
                     tint: AppTheme.secondary,
                   ),
                   _HeroInfoTile(
-                    text: '${(qualityValue * 100).round()}%',
+                    text: 'Confidence ${(qualityValue * 100).round()}%',
                     icon: Icons.shield_outlined,
                     tint: AppTheme.primaryDeep,
                   ),
                   _HeroInfoTile(
-                    text: placementLabel,
+                    text: '$placementLabel mode',
                     icon: Icons.place_outlined,
                     tint: AppTheme.accent,
                   ),
@@ -599,11 +610,11 @@ class _DashboardHeroCard extends StatelessWidget {
                     bottom: 14,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
+                        horizontal: 11,
+                        vertical: 9,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.66),
+                        color: Colors.white.withValues(alpha: 0.48),
                         borderRadius: BorderRadius.circular(18),
                         border: Border.all(
                           color: Colors.white.withValues(alpha: 0.18),
@@ -701,7 +712,7 @@ class _RecommendedActionCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: AppTheme.panelPadding(context, phone: 16, regular: 20),
+      padding: AppTheme.panelPadding(context, phone: 14, regular: 20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -739,16 +750,16 @@ class _RecommendedActionCard extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           Container(
             width: double.infinity,
             padding: EdgeInsets.symmetric(
-              horizontal: compact ? 12 : 14,
-              vertical: compact ? 10 : 12,
+              horizontal: compact ? 11 : 14,
+              vertical: compact ? 9 : 12,
             ),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.78),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(compact ? 18 : 20),
               border: Border.all(color: AppTheme.border),
             ),
             child: Row(
@@ -783,7 +794,7 @@ class _RecommendedActionCard extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           FilledButton.icon(
             onPressed: primaryTap,
             style:
@@ -815,7 +826,6 @@ class _PlacementQuickCard extends StatelessWidget {
     required this.selectedMode,
     required this.helperText,
     required this.qualityLabel,
-    required this.qualityValue,
     required this.onChanged,
     required this.onOpenDevice,
   });
@@ -823,7 +833,6 @@ class _PlacementQuickCard extends StatelessWidget {
   final PlacementMode selectedMode;
   final String helperText;
   final String qualityLabel;
-  final double qualityValue;
   final ValueChanged<PlacementMode> onChanged;
   final VoidCallback onOpenDevice;
 
@@ -832,7 +841,7 @@ class _PlacementQuickCard extends StatelessWidget {
     final compact = AppTheme.isPhone(context);
     return Container(
       width: double.infinity,
-      padding: AppTheme.panelPadding(context, phone: 14, regular: 16),
+      padding: AppTheme.panelPadding(context, phone: 12, regular: 16),
       decoration: BoxDecoration(
         gradient: AppTheme.panelGradient,
         borderRadius: BorderRadius.circular(
@@ -850,7 +859,7 @@ class _PlacementQuickCard extends StatelessWidget {
               final titleBlock = Text(
                 'Placement mode',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontSize: compact ? 16 : null,
+                      fontSize: compact ? 15 : null,
                     ),
               );
               final actions = Wrap(
@@ -858,23 +867,6 @@ class _PlacementQuickCard extends StatelessWidget {
                 runSpacing: 8,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 7,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppTheme.secondarySoft,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: Text(
-                      qualityLabel,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppTheme.primaryDeep,
-                            fontWeight: FontWeight.w700,
-                          ),
-                    ),
-                  ),
                   TextButton.icon(
                     onPressed: onOpenDevice,
                     icon: const Icon(Icons.tune_rounded, size: 18),
@@ -904,44 +896,20 @@ class _PlacementQuickCard extends StatelessWidget {
               );
             },
           ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.86),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppTheme.border),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: _PlacementChip(
-                    label: 'Ankle',
-                    icon: Icons.directions_walk_rounded,
-                    selected: selectedMode == PlacementMode.ankle,
-                    onTap: () => onChanged(PlacementMode.ankle),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _PlacementChip(
-                    label: 'Chest',
-                    icon: Icons.air_rounded,
-                    selected: selectedMode == PlacementMode.chest,
-                    onTap: () => onChanged(PlacementMode.chest),
-                  ),
-                ),
-              ],
-            ),
+          const SizedBox(height: 6),
+          PlacementModeSelector(
+            selectedMode: selectedMode,
+            onChanged: onChanged,
+            compact: compact,
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           LayoutBuilder(
             builder: (context, constraints) {
               final stacked = constraints.maxWidth < 360;
               final helper = Expanded(
                 child: Text(
                   helperText,
-                  maxLines: stacked ? 2 : 1,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: AppTheme.textSecondary,
@@ -950,7 +918,7 @@ class _PlacementQuickCard extends StatelessWidget {
                 ),
               );
               final meta = Text(
-                'Signal ${(qualityValue * 100).round()}%',
+                qualityLabel,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -963,24 +931,24 @@ class _PlacementQuickCard extends StatelessWidget {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    meta,
-                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Expanded(child: meta),
+                        TextButton(
+                          onPressed: onOpenDevice,
+                          child: const Text('Open'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
                     Text(
                       helperText,
-                      maxLines: 2,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: AppTheme.textSecondary,
                             fontWeight: FontWeight.w700,
                           ),
-                    ),
-                    const SizedBox(height: 4),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextButton(
-                        onPressed: onOpenDevice,
-                        child: const Text('Open setup'),
-                      ),
                     ),
                   ],
                 );
@@ -991,80 +959,16 @@ class _PlacementQuickCard extends StatelessWidget {
                   helper,
                   const SizedBox(width: 12),
                   meta,
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10),
                   TextButton(
                     onPressed: onOpenDevice,
-                    child: const Text('Open setup'),
+                    child: const Text('Open'),
                   ),
                 ],
               );
             },
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _PlacementChip extends StatelessWidget {
-  const _PlacementChip({
-    required this.label,
-    required this.icon,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String label;
-  final IconData icon;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final compact = AppTheme.isPhone(context);
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 220),
-        padding: EdgeInsets.symmetric(
-          horizontal: compact ? 10 : 12,
-          vertical: compact ? 10 : 12,
-        ),
-        decoration: BoxDecoration(
-          gradient: selected
-              ? LinearGradient(
-                  colors: [
-                    AppTheme.secondarySoft,
-                    Colors.white,
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                )
-              : null,
-          color: selected ? null : Colors.transparent,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(
-            color: selected ? AppTheme.secondary : AppTheme.border,
-          ),
-        ),
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: compact ? 16 : 18, color: AppTheme.primaryDeep),
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppTheme.textPrimary,
-                      fontWeight: FontWeight.w800,
-                    ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -1327,7 +1231,7 @@ class _HeroInfoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.82),
         borderRadius: BorderRadius.circular(999),
@@ -1336,17 +1240,8 @@ class _HeroInfoTile extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 24,
-            height: 24,
-            decoration: BoxDecoration(
-              color: tint.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            alignment: Alignment.center,
-            child: Icon(icon, size: 13, color: tint),
-          ),
-          const SizedBox(width: 7),
+          Icon(icon, size: 14, color: tint),
+          const SizedBox(width: 6),
           Text(
             text,
             maxLines: 1,
@@ -1355,6 +1250,7 @@ class _HeroInfoTile extends StatelessWidget {
                   color: AppTheme.textPrimary,
                   fontWeight: FontWeight.w800,
                   height: 1.1,
+                  fontSize: 12.5,
                 ),
           ),
         ],

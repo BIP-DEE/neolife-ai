@@ -35,10 +35,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AppHeader(
-                eyebrow: 'Settings',
+                eyebrow: 'Account',
                 title: 'Settings',
                 subtitle:
-                    'Manage caregiver details, baby profile context, notifications, trust, and account actions in one place.',
+                    'Manage caregiver details, baby profile context, notifications, trust, and account actions.',
                 statusLabel: 'Account',
               ),
               const SizedBox(height: 18),
@@ -262,6 +262,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   );
 
                   if (!wide) {
+                    final mobileCareContent = Column(
+                      children: [
+                        notificationsContent,
+                        const Divider(height: 28),
+                        monitoringPreferencesContent,
+                      ],
+                    );
+                    final mobileSupportContent = Column(
+                      children: [
+                        familySharingContent,
+                        const Divider(height: 28),
+                        aboutContent,
+                      ],
+                    );
                     final mobileSections = Column(
                       children: [
                         _SettingsDisclosureCard(
@@ -274,43 +288,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         const SizedBox(height: 12),
                         _SettingsDisclosureCard(
-                          eyebrow: 'Notifications',
-                          title: 'Caregiver alerts',
+                          eyebrow: 'Care preferences',
+                          title: 'Alerts and monitoring',
                           summary:
-                              'Control critical alerts, daily summaries, and quiet hours.',
-                          child: notificationsContent,
+                              'Control alerts, refresh behavior, and monitoring preferences together.',
+                          child: mobileCareContent,
                         ),
                         const SizedBox(height: 12),
                         _SettingsDisclosureCard(
-                          eyebrow: 'Monitoring',
-                          title: 'Monitoring preferences',
+                          eyebrow: 'Support',
+                          title: 'Family and support',
                           summary:
-                              'Review placement focus, live refresh, and temperature context.',
-                          child: monitoringPreferencesContent,
+                              'Keep shared caregiver access, support, and product help easy to reach.',
+                          child: mobileSupportContent,
                         ),
                         const SizedBox(height: 12),
                         _SettingsDisclosureCard(
-                          eyebrow: 'Family sharing',
-                          title: 'Care team visibility',
-                          summary:
-                              'Keep support and shared caregiver access easy to reach.',
-                          child: familySharingContent,
-                        ),
-                        const SizedBox(height: 12),
-                        _SettingsDisclosureCard(
-                          eyebrow: 'Privacy and trust',
-                          title: 'Trust and care information',
+                          eyebrow: 'Trust',
+                          title: 'Privacy and trust',
                           summary:
                               'See privacy, medical scope, and trust information clearly.',
                           child: privacyTrustContent,
-                        ),
-                        const SizedBox(height: 12),
-                        _SettingsDisclosureCard(
-                          eyebrow: 'About NeoLife AI',
-                          title: 'Product and support',
-                          summary:
-                              'Read product context and support information when needed.',
-                          child: aboutContent,
                         ),
                       ],
                     );
@@ -319,9 +317,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         profileHero,
                         const SizedBox(height: 16),
-                        settingsOverview,
-                        const SizedBox(height: 16),
                         mobileSections,
+                        const SizedBox(height: 16),
+                        settingsOverview,
                       ],
                     );
                   }
@@ -497,7 +495,7 @@ class _SettingsActionsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: AppTheme.panelGradient,
         borderRadius: BorderRadius.circular(30),
@@ -524,7 +522,7 @@ class _SettingsActionsCard extends StatelessWidget {
             'Keep the essential account actions and monitoring shortcuts visible here.',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -545,14 +543,14 @@ class _SettingsActionsCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           const _InfoRow(
             title: 'Account support',
             subtitle:
                 'Use this area for sign-out, trust questions, and caregiver support.',
             icon: Icons.support_agent_rounded,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           OutlinedButton.icon(
             onPressed: onSignOut,
             icon: const Icon(Icons.logout_rounded, size: 18),
@@ -635,8 +633,8 @@ class _SettingsDisclosureCard extends StatelessWidget {
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
           initiallyExpanded: initiallyExpanded,
-          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          tilePadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+          childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),

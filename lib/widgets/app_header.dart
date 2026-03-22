@@ -38,10 +38,10 @@ class AppHeader extends StatelessWidget {
             return Container(
               width: double.infinity,
               padding: EdgeInsets.fromLTRB(
-                compact ? 10 : 22,
-                compact ? 8 : 18,
-                compact ? 10 : 22,
-                compact ? 8 : 18,
+                compact ? 8 : 22,
+                compact ? 7 : 18,
+                compact ? 8 : 22,
+                compact ? 7 : 18,
               ),
               decoration: BoxDecoration(
                 gradient: compact
@@ -100,7 +100,7 @@ class AppHeader extends StatelessWidget {
                     ],
                   ),
                   if (hasMeta) ...[
-                    SizedBox(height: compact ? 6 : 16),
+                    SizedBox(height: compact ? 4 : 16),
                     if (compact)
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,

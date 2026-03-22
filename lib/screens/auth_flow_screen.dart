@@ -377,7 +377,7 @@ class _WelcomeCard extends StatelessWidget {
     return Container(
       padding: AppTheme.panelPadding(
         context,
-        phone: 18,
+        phone: 16,
         regular: 24,
       ),
       decoration: BoxDecoration(
@@ -409,7 +409,7 @@ class _WelcomeCard extends StatelessWidget {
           Text(
             'A calmer way to stay close to what matters.',
             style: (compact
-                    ? Theme.of(context).textTheme.headlineSmall
+                    ? Theme.of(context).textTheme.titleLarge
                     : Theme.of(context).textTheme.headlineMedium)
                 ?.copyWith(
               height: 1.05,
@@ -417,26 +417,26 @@ class _WelcomeCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Live wellness signals, temperature trend context, and thoughtful caregiver guidance in one trusted experience.',
+            'Live wellness signals and thoughtful caregiver guidance in one trusted experience.',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  height: 1.48,
+                  height: compact ? 1.42 : 1.48,
                 ),
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: compact ? 12 : 14),
           LayoutBuilder(
             builder: (context, constraints) {
               final stacked = constraints.maxWidth < 420;
               final createButton = FilledButton.icon(
                 onPressed: onRegister,
                 style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(52)),
+                    minimumSize: Size.fromHeight(compact ? 48 : 52)),
                 icon: const Icon(Icons.person_add_alt_1_rounded, size: 18),
                 label: const Text('Create account'),
               );
               final signInButton = OutlinedButton.icon(
                 onPressed: onSignIn,
                 style: OutlinedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(52),
+                  minimumSize: Size.fromHeight(compact ? 48 : 52),
                 ),
                 icon: const Icon(Icons.login_rounded, size: 18),
                 label: const Text('Sign in'),
@@ -469,16 +469,18 @@ class _WelcomeCard extends StatelessWidget {
               label: const Text('Enter review mode'),
             ),
           ),
+          if (!compact) ...[
+            const SizedBox(height: 10),
+            const Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _WelcomeTag(label: 'Live wellness overview'),
+                _WelcomeTag(label: 'Caregiver-ready support'),
+              ],
+            ),
+          ],
           const SizedBox(height: 10),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: const [
-              _WelcomeTag(label: 'Live wellness overview'),
-              _WelcomeTag(label: 'Caregiver-ready support'),
-            ],
-          ),
-          const SizedBox(height: 12),
           if (compact)
             Wrap(
               spacing: 8,
@@ -531,7 +533,7 @@ class _WelcomeCard extends StatelessWidget {
                 );
               },
             ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           Wrap(
             spacing: 10,
             runSpacing: 10,
@@ -754,12 +756,12 @@ class _HeroVisual extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: AppTheme.panelGradient,
         borderRadius: BorderRadius.circular(
-          AppTheme.panelRadius(context, phone: 26, regular: 32),
+          AppTheme.panelRadius(context, phone: 24, regular: 32),
         ),
         border: Border.all(color: AppTheme.border),
         boxShadow: AppTheme.softShadow,
       ),
-      padding: AppTheme.panelPadding(context, phone: 12, regular: 16),
+      padding: AppTheme.panelPadding(context, phone: 10, regular: 16),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(22),
         child: LayoutBuilder(
@@ -767,7 +769,7 @@ class _HeroVisual extends StatelessWidget {
             final compact = constraints.maxWidth < 500;
 
             return AspectRatio(
-              aspectRatio: compact ? 1.62 : 1.08,
+              aspectRatio: compact ? 1.9 : 1.08,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
@@ -777,7 +779,7 @@ class _HeroVisual extends StatelessWidget {
                       gradient: LinearGradient(
                         colors: [
                           AppTheme.primaryDeep.withValues(alpha: 0.01),
-                          AppTheme.primaryDeep.withValues(alpha: 0.10),
+                          AppTheme.primaryDeep.withValues(alpha: 0.08),
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
@@ -821,13 +823,14 @@ class _HeroVisual extends StatelessWidget {
                     bottom: 16,
                     child: Container(
                       constraints:
-                          BoxConstraints(maxWidth: compact ? 192 : 286),
-                      padding: EdgeInsets.all(compact ? 10 : 16),
+                          BoxConstraints(maxWidth: compact ? 176 : 286),
+                      padding: EdgeInsets.all(compact ? 8 : 16),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.46),
+                        color: Colors.white
+                            .withValues(alpha: compact ? 0.34 : 0.46),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.18),
+                          color: Colors.white.withValues(alpha: 0.14),
                         ),
                       ),
                       child: Column(
@@ -835,14 +838,24 @@ class _HeroVisual extends StatelessWidget {
                         children: [
                           Text(
                             title,
-                            style: Theme.of(context).textTheme.titleLarge,
+                            style: (compact
+                                    ? Theme.of(context).textTheme.titleMedium
+                                    : Theme.of(context).textTheme.titleLarge)
+                                ?.copyWith(
+                              color: AppTheme.textPrimary,
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             subtitle,
-                            maxLines: 2,
+                            maxLines: compact ? 1 : 2,
                             overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.bodyMedium,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppTheme.textPrimary,
+                                ),
                           ),
                           if (!compact) ...[
                             const SizedBox(height: 10),
