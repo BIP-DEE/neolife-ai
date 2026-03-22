@@ -39,12 +39,19 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> {
   Widget build(BuildContext context) {
     return Consumer<AppSessionController>(
       builder: (context, session, _) {
-        final wideBrand = MediaQuery.sizeOf(context).width >= 720;
+        final width = MediaQuery.sizeOf(context).width;
+        final wideBrand = width >= 720;
+        final compact = width < 720;
 
         return Scaffold(
           body: AmbientBackdrop(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(18, 16, 18, 24),
+              padding: EdgeInsets.fromLTRB(
+                compact ? 14 : 18,
+                compact ? 12 : 16,
+                compact ? 14 : 18,
+                compact ? 20 : 24,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -55,7 +62,7 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> {
                       showTagline: wideBrand,
                     ),
                   ),
-                  SizedBox(height: wideBrand ? 18 : 10),
+                  SizedBox(height: wideBrand ? 18 : 8),
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 360),
                     switchInCurve: Curves.easeOutCubic,
@@ -377,7 +384,7 @@ class _WelcomeCard extends StatelessWidget {
     return Container(
       padding: AppTheme.panelPadding(
         context,
-        phone: 16,
+        phone: 14,
         regular: 24,
       ),
       decoration: BoxDecoration(
@@ -409,7 +416,7 @@ class _WelcomeCard extends StatelessWidget {
           Text(
             'A calmer way to stay close to what matters.',
             style: (compact
-                    ? Theme.of(context).textTheme.titleLarge
+                    ? Theme.of(context).textTheme.headlineSmall
                     : Theme.of(context).textTheme.headlineMedium)
                 ?.copyWith(
               height: 1.05,
@@ -422,21 +429,21 @@ class _WelcomeCard extends StatelessWidget {
                   height: compact ? 1.42 : 1.48,
                 ),
           ),
-          SizedBox(height: compact ? 12 : 14),
+          SizedBox(height: compact ? 10 : 14),
           LayoutBuilder(
             builder: (context, constraints) {
               final stacked = constraints.maxWidth < 420;
               final createButton = FilledButton.icon(
                 onPressed: onRegister,
                 style: FilledButton.styleFrom(
-                    minimumSize: Size.fromHeight(compact ? 48 : 52)),
+                    minimumSize: Size.fromHeight(compact ? 46 : 52)),
                 icon: const Icon(Icons.person_add_alt_1_rounded, size: 18),
                 label: const Text('Create account'),
               );
               final signInButton = OutlinedButton.icon(
                 onPressed: onSignIn,
                 style: OutlinedButton.styleFrom(
-                  minimumSize: Size.fromHeight(compact ? 48 : 52),
+                  minimumSize: Size.fromHeight(compact ? 46 : 52),
                 ),
                 icon: const Icon(Icons.login_rounded, size: 18),
                 label: const Text('Sign in'),
@@ -461,8 +468,9 @@ class _WelcomeCard extends StatelessWidget {
               );
             },
           ),
-          const SizedBox(height: 12),
-          Center(
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerLeft,
             child: TextButton.icon(
               onPressed: onReviewMode,
               icon: const Icon(Icons.visibility_outlined, size: 18),
@@ -480,21 +488,14 @@ class _WelcomeCard extends StatelessWidget {
               ],
             ),
           ],
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           if (compact)
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: const [
-                _WelcomeMicroFact(
-                  icon: Icons.favorite_outline_rounded,
-                  label: 'Live now',
-                ),
-                _WelcomeMicroFact(
-                  icon: Icons.notifications_active_outlined,
-                  label: 'Trusted alerts',
-                ),
-              ],
+            Text(
+              'Live monitoring, trusted alerts, and caregiver support in one place.',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.textPrimary,
+                    fontWeight: FontWeight.w700,
+                  ),
             )
           else
             LayoutBuilder(
@@ -533,7 +534,7 @@ class _WelcomeCard extends StatelessWidget {
                 );
               },
             ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           Wrap(
             spacing: 10,
             runSpacing: 10,
@@ -621,42 +622,6 @@ class _WelcomeMetric extends StatelessWidget {
   }
 }
 
-class _WelcomeMicroFact extends StatelessWidget {
-  const _WelcomeMicroFact({
-    required this.icon,
-    required this.label,
-  });
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.78),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: AppTheme.border),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: AppTheme.primaryDeep),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.textPrimary,
-                  fontWeight: FontWeight.w700,
-                ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _WelcomeFooterPill extends StatelessWidget {
   const _WelcomeFooterPill({
     required this.label,
@@ -672,7 +637,7 @@ class _WelcomeFooterPill extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(999),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.72),
           borderRadius: BorderRadius.circular(999),
@@ -769,7 +734,7 @@ class _HeroVisual extends StatelessWidget {
             final compact = constraints.maxWidth < 500;
 
             return AspectRatio(
-              aspectRatio: compact ? 1.9 : 1.08,
+              aspectRatio: compact ? 2.35 : 1.08,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
@@ -779,7 +744,7 @@ class _HeroVisual extends StatelessWidget {
                       gradient: LinearGradient(
                         colors: [
                           AppTheme.primaryDeep.withValues(alpha: 0.01),
-                          AppTheme.primaryDeep.withValues(alpha: 0.08),
+                          AppTheme.primaryDeep.withValues(alpha: 0.06),
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
@@ -823,14 +788,14 @@ class _HeroVisual extends StatelessWidget {
                     bottom: 16,
                     child: Container(
                       constraints:
-                          BoxConstraints(maxWidth: compact ? 176 : 286),
-                      padding: EdgeInsets.all(compact ? 8 : 16),
+                          BoxConstraints(maxWidth: compact ? 150 : 272),
+                      padding: EdgeInsets.all(compact ? 8 : 14),
                       decoration: BoxDecoration(
                         color: Colors.white
-                            .withValues(alpha: compact ? 0.34 : 0.46),
+                            .withValues(alpha: compact ? 0.22 : 0.40),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.14),
+                          color: Colors.white.withValues(alpha: 0.12),
                         ),
                       ),
                       child: Column(
@@ -845,19 +810,19 @@ class _HeroVisual extends StatelessWidget {
                               color: AppTheme.textPrimary,
                             ),
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            subtitle,
-                            maxLines: compact ? 1 : 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  color: AppTheme.textPrimary,
-                                ),
-                          ),
                           if (!compact) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              subtitle,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: AppTheme.textPrimary,
+                                  ),
+                            ),
                             const SizedBox(height: 10),
                             const Wrap(
                               spacing: 8,
@@ -1028,7 +993,7 @@ class _AuthFormCardState extends State<_AuthFormCard> {
         emailValid && passwordValid && profileValid && widget.acceptedTerms;
 
     return Container(
-      padding: AppTheme.panelPadding(context, phone: 18, regular: 24),
+      padding: AppTheme.panelPadding(context, phone: 16, regular: 24),
       decoration: BoxDecoration(
         gradient: AppTheme.panelGradient,
         borderRadius: BorderRadius.circular(
@@ -1063,7 +1028,7 @@ class _AuthFormCardState extends State<_AuthFormCard> {
           Text(widget.title, style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 6),
           Text(widget.subtitle, style: Theme.of(context).textTheme.bodyMedium),
-          const SizedBox(height: 18),
+          const SizedBox(height: 16),
           if (widget.mode == _AuthMode.register) ...[
             _AuthTextField(
               label: 'Caregiver name',
@@ -1111,9 +1076,9 @@ class _AuthFormCardState extends State<_AuthFormCard> {
           ),
           if (password.isNotEmpty && !passwordValid)
             const _ValidationText('Password must be at least 6 characters.'),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.84),
               borderRadius: BorderRadius.circular(20),

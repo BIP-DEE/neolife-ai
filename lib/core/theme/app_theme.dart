@@ -52,12 +52,12 @@ class AppTheme {
   static List<BoxShadow> get softShadow => [
         const BoxShadow(
           color: shadow,
-          blurRadius: 28,
-          offset: Offset(0, 14),
+          blurRadius: 24,
+          offset: Offset(0, 12),
         ),
         const BoxShadow(
           color: Color(0x08FFFFFF),
-          blurRadius: 10,
+          blurRadius: 8,
           offset: Offset(0, -2),
         ),
       ];
@@ -128,7 +128,7 @@ class AppTheme {
         shadowColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(24),
           side: const BorderSide(color: border),
         ),
       ),
@@ -187,13 +187,13 @@ class AppTheme {
           backgroundColor: primary,
           shadowColor: primary.withValues(alpha: 0.18),
           foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
           textStyle: const TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w700,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(16),
           ),
         ),
       ),
@@ -202,13 +202,13 @@ class AppTheme {
           foregroundColor: textPrimary,
           side: const BorderSide(color: border),
           backgroundColor: Colors.white.withValues(alpha: 0.92),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
           textStyle: const TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w700,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(16),
           ),
         ),
       ),
@@ -219,9 +219,9 @@ class AppTheme {
             fontSize: 13,
             fontWeight: FontWeight.w700,
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(14),
           ),
         ),
       ),
@@ -229,9 +229,9 @@ class AppTheme {
         style: IconButton.styleFrom(
           foregroundColor: primaryDeep,
           backgroundColor: Colors.white.withValues(alpha: 0.88),
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(10),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(16),
           ),
         ),
       ),
@@ -242,7 +242,7 @@ class AppTheme {
           color: textPrimary,
           fontWeight: FontWeight.w700,
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(999),
         ),

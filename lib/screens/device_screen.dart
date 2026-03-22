@@ -38,7 +38,7 @@ class DeviceScreen extends StatelessWidget {
                 statusLabel:
                     controller.isConnected ? 'Connected' : 'Disconnected',
               ),
-              const SizedBox(height: 18),
+              const SizedBox(height: 14),
               LayoutBuilder(
                 builder: (context, constraints) {
                   final wide = constraints.maxWidth >= 940;
@@ -91,6 +91,9 @@ class DeviceScreen extends StatelessWidget {
                     selectedMode: controller.placementMode,
                     helperText: controller.placementMode.helperText,
                     onChanged: controller.setPlacementMode,
+                    subtitle:
+                        'Select the wearable position that matches the current fit.',
+                    footerLabel: controller.qualityLabel,
                   );
                   final steps = _SetupStepsCard(
                     currentMode: controller.placementMode,

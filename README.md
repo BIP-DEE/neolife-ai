@@ -93,6 +93,7 @@ cd "/Users/chandadiwakar/Desktop/neolife ai/Neo"
 ```
 
 - The script binds Flutter web-server to `0.0.0.0` on port `8098`.
+- If `8098` is already in use, the script automatically selects the next free port and prints the final local URL.
 - It tries a public `cloudflared` tunnel first and falls back to `localtunnel` if Cloudflare quick tunnels are unavailable.
 - The script prints the shareable HTTPS review URL in the terminal once the tunnel is ready.
 - If you need to install a tunnel tool manually, use one of these:

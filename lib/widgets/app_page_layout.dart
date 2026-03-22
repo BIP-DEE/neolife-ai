@@ -19,8 +19,8 @@ class AppPageLayout extends StatelessWidget {
             ? 26.0
             : width >= 720
                 ? 22.0
-                : 16.0;
-    final topPadding = width >= 720 ? 22.0 : 10.0;
+                : 14.0;
+    final topPadding = width >= 720 ? 20.0 : 6.0;
     final effectiveBottomSpacing = width >= 980 ? 42.0 : bottomSpacing;
 
     return SingleChildScrollView(

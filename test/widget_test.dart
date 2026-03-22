@@ -218,7 +218,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 700));
 
-    expect(find.text('Account and controls'), findsOneWidget);
+    expect(find.text('Quick settings'), findsOneWidget);
   });
 
   testWidgets('main navigation reaches each primary screen', (tester) async {
@@ -263,13 +263,13 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('nav-settings')));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 700));
-    expect(find.text('Account and controls'), findsOneWidget);
+    expect(find.text('Quick settings'), findsOneWidget);
   });
 
   testWidgets('dashboard stays stable across narrow phone widths', (
     tester,
   ) async {
-    final widths = [320.0, 360.0, 390.0, 412.0, 430.0];
+    final widths = [320.0, 360.0, 375.0, 390.0, 412.0, 430.0];
 
     for (final width in widths) {
       await tester.binding.setSurfaceSize(Size(width, 900));
@@ -305,7 +305,7 @@ void main() {
   testWidgets('welcome flow stays stable across narrow phone widths', (
     tester,
   ) async {
-    final widths = [320.0, 360.0, 390.0, 412.0, 430.0];
+    final widths = [320.0, 360.0, 375.0, 390.0, 412.0, 430.0];
 
     for (final width in widths) {
       await tester.binding.setSurfaceSize(Size(width, 920));
@@ -328,5 +328,60 @@ void main() {
     }
 
     addTearDown(() => tester.binding.setSurfaceSize(null));
+  });
+
+  testWidgets('dashboard stays stable with larger phone text scaling', (
+    tester,
+  ) async {
+    tester.platformDispatcher.textScaleFactorTestValue = 1.35;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    await tester.binding.setSurfaceSize(const Size(390, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final session = AppSessionController()
+      ..enterReviewMode();
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<AppSessionController>.value(value: session),
+          ChangeNotifierProvider(create: (_) => NeoLifeController()),
+        ],
+        child: const NeoLifeApp(),
+      ),
+    );
+
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 700));
+
+    expect(find.text('Key wellness signals'), findsOneWidget);
+    expect(find.text('Recommended action'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('welcome flow stays stable with larger phone text scaling', (
+    tester,
+  ) async {
+    tester.platformDispatcher.textScaleFactorTestValue = 1.35;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    await tester.binding.setSurfaceSize(const Size(360, 920));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => AppSessionController()),
+          ChangeNotifierProvider(create: (_) => NeoLifeController()),
+        ],
+        child: const NeoLifeApp(),
+      ),
+    );
+
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(find.text('Create account'), findsOneWidget);
+    expect(find.text('Enter review mode'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }

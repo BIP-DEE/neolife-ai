@@ -38,10 +38,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 eyebrow: 'Account',
                 title: 'Settings',
                 subtitle:
-                    'Manage caregiver details, baby profile context, notifications, trust, and account actions.',
+                    'Manage caregiver details, monitoring preferences, trust, and account actions.',
                 statusLabel: 'Account',
               ),
-              const SizedBox(height: 18),
+              const SizedBox(height: 14),
               LayoutBuilder(
                 builder: (context, constraints) {
                   final wide = constraints.maxWidth >= 960;
@@ -273,6 +273,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         familySharingContent,
                         const Divider(height: 28),
+                        privacyTrustContent,
+                        const Divider(height: 28),
                         aboutContent,
                       ],
                     );
@@ -297,18 +299,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         const SizedBox(height: 12),
                         _SettingsDisclosureCard(
                           eyebrow: 'Support',
-                          title: 'Family and support',
+                          title: 'Family, support, and trust',
                           summary:
-                              'Keep shared caregiver access, support, and product help easy to reach.',
+                              'Keep shared caregiver access, support, and trust information easy to reach.',
                           child: mobileSupportContent,
-                        ),
-                        const SizedBox(height: 12),
-                        _SettingsDisclosureCard(
-                          eyebrow: 'Trust',
-                          title: 'Privacy and trust',
-                          summary:
-                              'See privacy, medical scope, and trust information clearly.',
-                          child: privacyTrustContent,
                         ),
                       ],
                     );
@@ -317,9 +311,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         profileHero,
                         const SizedBox(height: 16),
-                        mobileSections,
-                        const SizedBox(height: 16),
                         settingsOverview,
+                        const SizedBox(height: 14),
+                        mobileSections,
                       ],
                     );
                   }
@@ -415,9 +409,9 @@ class _ProfileHeroCard extends StatelessWidget {
                 caregiverName,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 2),
               Text(email, style: Theme.of(context).textTheme.bodyMedium),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -427,7 +421,7 @@ class _ProfileHeroCard extends StatelessWidget {
                     icon: Icons.person_outline_rounded,
                   ),
                   _ProfilePill(
-                    label: 'Infant profile: $infantName',
+                    label: infantName,
                     icon: Icons.child_friendly_rounded,
                   ),
                 ],
@@ -455,9 +449,34 @@ class _ProfileHeroCard extends StatelessWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                avatar,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    avatar,
+                    const SizedBox(width: 12),
+                    Expanded(child: copy),
+                  ],
+                ),
                 const SizedBox(height: 12),
-                copy,
+                Row(
+                  children: [
+                    Expanded(
+                      child: _AccountHighlight(
+                        label: 'Baby profile',
+                        value: infantName,
+                        icon: Icons.child_friendly_rounded,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _AccountHighlight(
+                        label: 'Placement',
+                        value: placementLabel,
+                        icon: Icons.place_outlined,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             );
           }
@@ -493,12 +512,13 @@ class _SettingsActionsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final compact = AppTheme.isPhone(context);
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(compact ? 14 : 16),
       decoration: BoxDecoration(
         gradient: AppTheme.panelGradient,
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(compact ? 24 : 30),
         border: Border.all(color: AppTheme.border),
         boxShadow: AppTheme.softShadow,
       ),
@@ -514,15 +534,15 @@ class _SettingsActionsCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Account and controls',
+            'Quick settings',
             style: Theme.of(context).textTheme.titleLarge,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
-            'Keep the essential account actions and monitoring shortcuts visible here.',
+            'Keep the key account actions and monitoring shortcuts close by.',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -543,16 +563,19 @@ class _SettingsActionsCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           const _InfoRow(
             title: 'Account support',
             subtitle:
                 'Use this area for sign-out, trust questions, and caregiver support.',
             icon: Icons.support_agent_rounded,
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           OutlinedButton.icon(
             onPressed: onSignOut,
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(46),
+            ),
             icon: const Icon(Icons.logout_rounded, size: 18),
             label: const Text('Sign out'),
           ),
@@ -633,8 +656,8 @@ class _SettingsDisclosureCard extends StatelessWidget {
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
           initiallyExpanded: initiallyExpanded,
-          tilePadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
-          childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+          tilePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+          childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),
@@ -651,14 +674,19 @@ class _SettingsDisclosureCard extends StatelessWidget {
                       fontWeight: FontWeight.w800,
                     ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 3),
               Text(title, style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 4),
-              Text(summary, style: Theme.of(context).textTheme.bodyMedium),
+              const SizedBox(height: 3),
+              Text(
+                summary,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
             ],
           ),
           children: [
-            const Divider(height: 18),
+            const Divider(height: 14),
             child,
           ],
         ),

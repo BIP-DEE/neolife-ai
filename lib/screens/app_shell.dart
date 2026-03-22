@@ -152,16 +152,16 @@ class _NeoBottomBar extends StatelessWidget {
     ];
 
     return SafeArea(
-      minimum: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      minimum: const EdgeInsets.fromLTRB(14, 0, 14, 12),
       child: DecoratedBox(
         decoration: BoxDecoration(
           gradient: AppTheme.panelGradient,
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(26),
           border: Border.all(color: AppTheme.border),
           boxShadow: AppTheme.softShadow,
         ),
         child: Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(6),
           child: Row(
             children: [
               for (var i = 0; i < items.length; i++)
@@ -200,7 +200,7 @@ class _NavButton extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 240),
         curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 9),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           gradient: selected

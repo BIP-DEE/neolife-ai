@@ -5,8 +5,28 @@ ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 PORT="${PORT:-8098}"
 HOST="${HOST:-0.0.0.0}"
 TUNNEL_LOG=""
+INITIAL_PORT="${PORT}"
 
-echo "Starting NeoLife AI review build on http://${HOST}:${PORT}"
+port_in_use() {
+  lsof -nP -iTCP:"${1}" -sTCP:LISTEN >/dev/null 2>&1
+}
+
+select_port() {
+  local candidate="${PORT}"
+  while port_in_use "${candidate}"; do
+    echo "Port ${candidate} is already in use. Trying the next port..."
+    candidate=$((candidate + 1))
+  done
+  PORT="${candidate}"
+}
+
+select_port
+
+echo "Starting NeoLife AI review build..."
+if [[ "${PORT}" != "${INITIAL_PORT}" ]]; then
+  echo "Requested port ${INITIAL_PORT} was unavailable. Using port ${PORT} instead."
+fi
+echo "Local review URL: http://127.0.0.1:${PORT}"
 echo "Use the 'Enter review mode' action on the welcome screen to bypass authentication."
 
 cleanup() {
@@ -101,6 +121,8 @@ if ! wait_for_server; then
   echo "Flutter web-server did not become ready on port ${PORT}."
   exit 1
 fi
+
+echo "Flutter web-server is ready on http://127.0.0.1:${PORT}"
 
 if command -v cloudflared >/dev/null 2>&1 && start_cloudflared; then
   :

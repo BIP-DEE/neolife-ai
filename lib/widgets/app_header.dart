@@ -38,30 +38,22 @@ class AppHeader extends StatelessWidget {
             return Container(
               width: double.infinity,
               padding: EdgeInsets.fromLTRB(
-                compact ? 8 : 22,
-                compact ? 7 : 18,
-                compact ? 8 : 22,
-                compact ? 7 : 18,
+                compact ? 6 : 22,
+                compact ? 5 : 18,
+                compact ? 6 : 22,
+                compact ? 6 : 18,
               ),
               decoration: BoxDecoration(
-                gradient: compact
-                    ? LinearGradient(
-                        colors: [
-                          Colors.white.withValues(alpha: 0.99),
-                          AppTheme.backgroundAlt,
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      )
-                    : AppTheme.panelGradient,
-                borderRadius: BorderRadius.circular(compact ? 18 : 30),
+                color: compact ? Colors.white.withValues(alpha: 0.96) : null,
+                gradient: compact ? null : AppTheme.panelGradient,
+                borderRadius: BorderRadius.circular(compact ? 16 : 30),
                 border: Border.all(color: AppTheme.border),
                 boxShadow: compact
                     ? [
                         BoxShadow(
-                          color: AppTheme.shadow.withValues(alpha: 0.42),
-                          blurRadius: 14,
-                          offset: const Offset(0, 7),
+                          color: AppTheme.shadow.withValues(alpha: 0.26),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
                         ),
                       ]
                     : AppTheme.softShadow,
@@ -100,7 +92,7 @@ class AppHeader extends StatelessWidget {
                     ],
                   ),
                   if (hasMeta) ...[
-                    SizedBox(height: compact ? 4 : 16),
+                    SizedBox(height: compact ? 2 : 16),
                     if (compact)
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,7 +106,7 @@ class AppHeader extends StatelessWidget {
                                     eyebrow!,
                                     style: Theme.of(context)
                                         .textTheme
-                                        .bodyMedium
+                                        .labelLarge
                                         ?.copyWith(
                                           color: AppTheme.primary,
                                           fontWeight: FontWeight.w800,
@@ -129,9 +121,10 @@ class AppHeader extends StatelessWidget {
                                     overflow: TextOverflow.ellipsis,
                                     style: Theme.of(context)
                                         .textTheme
-                                        .titleMedium
+                                        .titleSmall
                                         ?.copyWith(
                                           color: AppTheme.textPrimary,
+                                          fontWeight: FontWeight.w800,
                                         ),
                                   ),
                                 ],
